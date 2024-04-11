@@ -1,5 +1,5 @@
 {
-  "name": "@goto-lab/pufu-editor",
+  "name": "@dyson-yamashita/pufu-editor",
   "version": "0.9.0",
   "description": "Web editor component for Project score (Pufu).",
   "main": "dist/index.js",
