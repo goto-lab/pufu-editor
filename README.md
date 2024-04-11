@@ -10,7 +10,7 @@
 
 ## デモ
 
-プ譜エディターの[Storybookページ]()をご覧ください。
+プ譜エディターの[Storybookページ](https://goto-lab.github.io/pufu-editor)をご覧ください。
 
 ## インストール
 
