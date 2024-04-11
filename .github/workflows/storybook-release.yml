@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "README.md"
+      - "CHANGELOG.md"
 env:
   cache-version: v1
 jobs:
