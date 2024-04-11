@@ -26,11 +26,23 @@ type Story = StoryObj<typeof meta>;
 const key1 = "example1";
 const key2 = "example2";
 
+const isMobile = () => {
+  if (
+    window.matchMedia &&
+    window.matchMedia("(max-device-width: 640px)").matches
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const Example1: Story = {
   args: {
     uniqueKey: key1,
     initScore: exampleData,
     preview: true,
+    mobile: isMobile(),
   },
   render: function Comp({ ...args }) {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -81,6 +93,7 @@ export const Example2: Story = {
   args: {
     uniqueKey: key2,
     feedback: true,
+    mobile: isMobile(),
   },
   render: function Comp({ ...args }) {
     const [isOpen, setIsOpen] = React.useState(false);
