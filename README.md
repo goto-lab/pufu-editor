@@ -18,7 +18,7 @@ Tailwind CSSを利用するためインストールしてください。
 
 ```
 npm install tailwindcss --save-dev
-npm install pufu-editor
+npm install @dyson-yamashita/pufu-editor
 ```
 
 ## プ譜エディタの設定
