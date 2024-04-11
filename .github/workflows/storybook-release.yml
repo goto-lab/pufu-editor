@@ -10,6 +10,9 @@ jobs:
     name: Project Build
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
