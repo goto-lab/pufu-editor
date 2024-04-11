@@ -30,8 +30,8 @@
     "fix:lint": "eslint src --fix"
   },
   "author": "Dyson Yamashita <oss@haluworks.com>",
-  "homepage": "https://github.com/dyson-yamashita/pufu-editor",
-  "bugs": "https://github.com/dyson-yamashita/pufu-editor/issues",
+  "homepage": "https://github.com/goto-lab/pufu-editor",
+  "bugs": "https://github.com/goto-lab/pufu-editor/issues",
   "keywords": [
     "project management",
     "project score",
