@@ -1,0 +1,35 @@
+name: Release Storybook to GitHubPages
+on:
+  push:
+    branches:
+      - main
+env:
+  cache-version: v1
+jobs:
+  release:
+    name: Project Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Build storybook
+        run: npm run storybook-build
+
+      - name: Test storybook
+        run: npm run storybook-build-test
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./storybook-static

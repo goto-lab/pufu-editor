@@ -1,0 +1,34 @@
+{
+  "score": {
+    "GainingGoal": "獲得目標",
+    "IntermediatePurpose": "中間目的",
+    "Measure": "施策",
+    "WinCondition": "勝利条件",
+    "People": "ひと",
+    "Money": "お金",
+    "Time": "時間",
+    "Quality": "クオリティ",
+    "BusinessScheme": "商流 / 座組",
+    "Environment": "環境",
+    "Rival": "ライバル",
+    "ForeignEnemy": "外敵"
+  },
+  "msg": {
+    "AddMeasure": "施策を追加",
+    "InputMeasure": "施策を入力",
+    "AddPurpose": "中間目的を追加",
+    "InputPurpose": "中間目的を入力",
+    "InputWinCondition": "勝利条件を入力",
+    "InputGainingGoal": "獲得目標を入力",
+    "InputPeople": "ひとを入力",
+    "InputMoney": "お金を入力",
+    "InputTime": "時間を入力",
+    "InputQuality": "クオリティを入力",
+    "InputBusinessScheme": "商流 / 座組を入力",
+    "InputEnvironment": "環境を入力",
+    "InputRival": "ライバルを入力",
+    "InputForeignEnemy": "外敵を入力",
+    "InputComment": "コメントを入力",
+    "LoadFailed": "プ譜の作成に失敗しました。"
+  }
+}

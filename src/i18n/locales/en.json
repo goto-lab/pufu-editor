@@ -1,0 +1,34 @@
+{
+  "score": {
+    "GainingGoal": "Gaining goal",
+    "IntermediatePurpose": "Intermediate purposes",
+    "Measure": "Measures",
+    "WinCondition": "Win condition",
+    "People": "People",
+    "Money": "Money",
+    "Time": "Time",
+    "Quality": "Quality",
+    "BusinessScheme": "Business scheme",
+    "Environment": "Environment",
+    "Rival": "Rival",
+    "ForeignEnemy": "ForeignEnemy"
+  },
+  "msg": {
+    "AddMeasure": "Add measure",
+    "InputMeasure": "Input measure",
+    "AddPurpose": "Add purpose",
+    "InputPurpose": "Input purpose",
+    "InputWinCondition": "Input win condition",
+    "InputGainingGoal": "Input gaining goal",
+    "InputPeople": "Input people",
+    "InputMoney": "Input money",
+    "InputTime": "Input time",
+    "InputQuality": "Input quality ",
+    "InputBusinessScheme": "Input business scheme",
+    "InputEnvironment": "Input environment",
+    "InputRival": "Input rival",
+    "InputForeignEnemy": "Input foreign enemy",
+    "InputComment": "Input comment",
+    "LoadFailed": "Failed to load pufu data."
+  }
+}

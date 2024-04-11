@@ -1,0 +1,123 @@
+.comment {
+  color: #999;
+  position: relative;
+  background: #fff;
+  border: 2px solid rgb(134, 141, 154);
+  min-height: 2em;
+  border-radius: 7px;
+  outline: none;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -o-border-radius: 7px;
+  -ms-border-radius: 7px;
+}
+.comment::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  left: 45%;
+  top: -15px;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid rgb(134, 141, 154);
+  border-left: 15px solid transparent;
+}
+.comment::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  left: 45%;
+  top: -12px;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #fff;
+  border-left: 15px solid transparent;
+}
+div.blue {
+  border-color: rgb(65, 180, 247);
+}
+.blue::before {
+  border-bottom-color: rgb(65, 180, 247);
+}
+div.green {
+  border-color: rgb(67, 219, 109);
+}
+.green::before {
+  border-bottom-color: rgb(67, 219, 109);
+}
+div.red {
+  border-color: #f2a4b7;
+}
+.red::before {
+  border-bottom-color: #f2a4b7;
+}
+.blue-dark::after,
+.green-dark::after,
+.red-dark::after {
+  border-bottom-color: rgb(17, 23, 38);
+}
+
+.comment-upside {
+  position: relative;
+  background: #fff;
+  border: 2px solid rgb(134, 141, 154);
+  min-height: 2em;
+  border-radius: 7px;
+  outline: none;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -o-border-radius: 7px;
+  -ms-border-radius: 7px;
+}
+
+.comment-upside::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  left: 45%;
+  bottom: -15px;
+  border-right: 15px solid transparent;
+  border-top: 15px solid rgb(134, 141, 154);
+  border-left: 15px solid transparent;
+}
+
+.comment-upside::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  left: 45%;
+  bottom: -12px;
+  border-right: 15px solid transparent;
+  border-top: 15px solid #fff;
+  border-left: 15px solid transparent;
+}
+
+div.blue-upside {
+  border-color: rgb(65, 180, 247);
+}
+.blue-upside::before {
+  border-top-color: rgb(65, 180, 247);
+}
+div.green-upside {
+  border-color: rgb(67, 219, 109);
+}
+.green-upside::before {
+  border-top-color: rgb(67, 219, 109);
+}
+div.red-upside {
+  border-color: #f2a4b7;
+}
+.red-upside::before {
+  border-top-color: #f2a4b7;
+}
+.blue-upside-dark::after,
+.green-upside-dark::after,
+.red-upside-dark::after {
+  border-top-color: rgb(17, 23, 38);
+}
