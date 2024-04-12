@@ -12,20 +12,43 @@
 
 プ譜エディターの[Storybookページ](https://goto-lab.github.io/pufu-editor)をご覧ください。
 
-## インストール
+## インストールおよび設定
 
-Tailwind CSSを利用するためインストールしてください。
+プ譜エディタおよびTailwind CSSインストール
 
 ```
 npm install tailwindcss --save-dev
 npm install @goto-lab/pufu-editor
 ```
 
-## プ譜エディタの設定
+tailwind.config.jsの設定を変更
 
 ```
-import { ProjectScore } from "pufu-editor";
-import "./App.css";
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@goto-lab/pufu-editor/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+src/index.cssに@tailwindディレクティブを追加
+
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+src/App.js
+
+```
+import { ProjectScore } from "@goto-lab/pufu-editor";
 
 function App() {
   return (
@@ -37,6 +60,8 @@ function App() {
 
 export default App;
 ```
+
+参考: [Install Tailwind CSS with Create React App](https://tailwindcss.com/docs/guides/create-react-app)
 
 ## 機能
 
