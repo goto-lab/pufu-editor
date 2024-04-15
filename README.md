@@ -1,6 +1,6 @@
 # プ譜エディター
 
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg).
 ![React](https://img.shields.io/badge/react-v18.2.0-blue)
 ![React](https://img.shields.io/badge/tailwindcss-v3.4.3-blue)
 ![Strorybook](https://img.shields.io/badge/storybook-v8.0.5-red)
@@ -118,4 +118,4 @@ download("sample1", "png");
 
 ## ライセンス
 
-MIT ライセンス
+BSD License (3-clause BSD License)
