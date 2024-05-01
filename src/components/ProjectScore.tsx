@@ -53,7 +53,7 @@ export const ProjectScore = ({
     text: string
   ): boolean => {
     if (preview && text) {
-      return state.scores[scoreKey].map.purposes
+      return state.scores[scoreKey].purposes
         .map((p, pIndex) => {
           return p.measures
             .map((m, mIndex) => {
@@ -116,7 +116,7 @@ export const ProjectScore = ({
           >
             <div className={`w-2/3`}>
               <MeasurePurposeHeader i18n={i18n} />
-              {!preview && state.scores[scoreKey].map.purposes.length === 0 && (
+              {!preview && state.scores[scoreKey].purposes.length === 0 && (
                 <div
                   className={`flex justify-end ${mobile ? "pb-6 pt-3" : "py-3"}`}
                 >
@@ -130,162 +130,155 @@ export const ProjectScore = ({
                   />
                 </div>
               )}
-              {state.scores[scoreKey].map.purposes.map(
-                (purpose, purposeIndex) => {
-                  return (
-                    <div
-                      className={`
+              {state.scores[scoreKey].purposes.map((purpose, purposeIndex) => {
+                return (
+                  <div
+                    className={`
                       flex
                       ${mobile && "mb-2 ml-2 rounded bg-gray-100 pb-2 dark:bg-gray-800"}
                     `}
-                      key={`purpose-${purpose.uuid}-list`}
-                    >
-                      <div
-                        className={`
+                    key={`purpose-${purpose.uuid}-list`}
+                  >
+                    <div
+                      className={`
                         w-1/2
                         ${mobile ? "px-2" : "pl-3 pr-6"} 
                         pt-3
                       `}
+                    >
+                      <ReactSortable
+                        list={purpose.measures.map((m) => ({
+                          id: m.uuid,
+                          ...m,
+                        }))}
+                        setList={(measures) => {
+                          const before = purpose.measures
+                            .map((m) => m.uuid)
+                            .join();
+                          const after = measures.map((m) => m.uuid).join();
+                          if (before !== after) {
+                            state.setMeasures(scoreKey, purpose.uuid, measures);
+                            updateAction();
+                          }
+                        }}
+                        animation={150}
+                        delay={2}
+                        filter={"textarea"}
+                        preventOnFilter={false}
                       >
-                        <ReactSortable
-                          list={purpose.measures.map((m) => ({
-                            id: m.uuid,
-                            ...m,
-                          }))}
-                          setList={(measures) => {
-                            const before = purpose.measures
-                              .map((m) => m.uuid)
-                              .join();
-                            const after = measures.map((m) => m.uuid).join();
-                            if (before !== after) {
-                              state.setMeasures(
-                                scoreKey,
-                                purpose.uuid,
-                                measures
-                              );
-                              updateAction();
-                            }
-                          }}
-                          animation={150}
-                          delay={2}
-                          filter={"textarea"}
-                          preventOnFilter={false}
-                        >
-                          {purpose.measures.map((measure, measureIndex) => (
-                            <div
-                              key={`measure-${measure.uuid}`}
-                              className="pb-1"
-                              onClick={updateAction}
-                              onBlur={updateAction}
-                            >
-                              <Measure
-                                scoreKey={scoreKey}
-                                index={measureIndex}
-                                count={purpose.measures.length}
-                                measure={measure}
-                                feedback={feedback}
-                                preview={preview}
-                                dark={dark}
-                                mobile={mobile}
-                                i18n={i18n}
-                                hidden={hideMeasure(
-                                  purposeIndex,
-                                  measureIndex,
-                                  measure.text
-                                )}
-                                onChange={(measure) => {
-                                  state.setMeasure(
-                                    scoreKey,
-                                    purpose.uuid,
-                                    measure
-                                  );
-                                  updateAction();
-                                }}
-                                onDelete={(measure) => {
-                                  state.deleteMeasure(
-                                    scoreKey,
-                                    purpose.uuid,
-                                    measure.uuid
-                                  );
-                                  updateAction();
-                                }}
-                              />
-                            </div>
-                          ))}
-                        </ReactSortable>
-                        {!preview && purpose.measures.length === 0 && (
+                        {purpose.measures.map((measure, measureIndex) => (
                           <div
-                            className={`
+                            key={`measure-${measure.uuid}`}
+                            className="pb-1"
+                            onClick={updateAction}
+                            onBlur={updateAction}
+                          >
+                            <Measure
+                              scoreKey={scoreKey}
+                              index={measureIndex}
+                              count={purpose.measures.length}
+                              measure={measure}
+                              feedback={feedback}
+                              preview={preview}
+                              dark={dark}
+                              mobile={mobile}
+                              i18n={i18n}
+                              hidden={hideMeasure(
+                                purposeIndex,
+                                measureIndex,
+                                measure.text
+                              )}
+                              onChange={(measure) => {
+                                state.setMeasure(
+                                  scoreKey,
+                                  purpose.uuid,
+                                  measure
+                                );
+                                updateAction();
+                              }}
+                              onDelete={(measure) => {
+                                state.deleteMeasure(
+                                  scoreKey,
+                                  purpose.uuid,
+                                  measure.uuid
+                                );
+                                updateAction();
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </ReactSortable>
+                      {!preview && purpose.measures.length === 0 && (
+                        <div
+                          className={`
                             ${mobile ? "pb-6 pt-1" : "pt-2 pb-9"}
                           `}
-                          >
-                            <AddMeasure
-                              i18n={i18n}
-                              onClick={() => {
-                                state.addMeasure(scoreKey, purpose.uuid);
-                                updateAction();
-                              }}
-                            ></AddMeasure>
-                          </div>
-                        )}
-                        {!preview && purpose.measures.length > 0 && (
-                          <div className="pt-2">
-                            <AddMeasureIcon
-                              onClick={() => {
-                                state.addMeasure(scoreKey, purpose.uuid);
-                                updateAction();
-                              }}
-                            ></AddMeasureIcon>
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        className={`w-1/2 ${mobile ? "px-1 pt-4" : "px-6 xl:px-14 table " + (preview ? "pt-3" : "pt-1")} `}
-                      >
-                        <IntermediatePurpose
-                          scoreKey={scoreKey}
-                          purpose={purpose}
-                          index={purposeIndex}
-                          count={state.scores[scoreKey].map.purposes.length}
-                          preveMeasureCount={
-                            purposeIndex === 0
-                              ? 0
-                              : state.scores[scoreKey].map.purposes[
-                                  purposeIndex - 1
-                                ].measures.length
-                          }
-                          onChange={(purpose) => {
-                            state.setPurpose(scoreKey, purpose);
-                            updateAction();
-                          }}
-                          onDelete={(purpose) => {
-                            state.deletePurpose(scoreKey, purpose.uuid);
-                            updateAction();
-                          }}
-                          onAdd={() => {
-                            state.addPurpose(scoreKey);
-                            updateAction();
-                          }}
-                          onUp={() => {
-                            state.swapPurpose(scoreKey, purpose.uuid, -1);
-                            updateAction();
-                          }}
-                          onDown={() => {
-                            state.swapPurpose(scoreKey, purpose.uuid, 1);
-                            updateAction();
-                          }}
-                          onAction={updateAction}
-                          feedback={feedback}
-                          preview={preview}
-                          dark={dark}
-                          mobile={mobile}
-                          i18n={i18n}
-                        ></IntermediatePurpose>
-                      </div>
+                        >
+                          <AddMeasure
+                            i18n={i18n}
+                            onClick={() => {
+                              state.addMeasure(scoreKey, purpose.uuid);
+                              updateAction();
+                            }}
+                          ></AddMeasure>
+                        </div>
+                      )}
+                      {!preview && purpose.measures.length > 0 && (
+                        <div className="pt-2">
+                          <AddMeasureIcon
+                            onClick={() => {
+                              state.addMeasure(scoreKey, purpose.uuid);
+                              updateAction();
+                            }}
+                          ></AddMeasureIcon>
+                        </div>
+                      )}
                     </div>
-                  );
-                }
-              )}
+                    <div
+                      className={`w-1/2 ${mobile ? "px-1 pt-4" : "px-6 xl:px-14 table " + (preview ? "pt-3" : "pt-1")} `}
+                    >
+                      <IntermediatePurpose
+                        scoreKey={scoreKey}
+                        purpose={purpose}
+                        index={purposeIndex}
+                        count={state.scores[scoreKey].purposes.length}
+                        preveMeasureCount={
+                          purposeIndex === 0
+                            ? 0
+                            : state.scores[scoreKey].purposes[purposeIndex - 1]
+                                .measures.length
+                        }
+                        onChange={(purpose) => {
+                          state.setPurpose(scoreKey, purpose);
+                          updateAction();
+                        }}
+                        onDelete={(purpose) => {
+                          state.deletePurpose(scoreKey, purpose.uuid);
+                          updateAction();
+                        }}
+                        onAdd={() => {
+                          state.addPurpose(scoreKey);
+                          updateAction();
+                        }}
+                        onUp={() => {
+                          state.swapPurpose(scoreKey, purpose.uuid, -1);
+                          updateAction();
+                        }}
+                        onDown={() => {
+                          state.swapPurpose(scoreKey, purpose.uuid, 1);
+                          updateAction();
+                        }}
+                        onAction={updateAction}
+                        feedback={feedback}
+                        preview={preview}
+                        dark={dark}
+                        mobile={mobile}
+                        i18n={i18n}
+                      ></IntermediatePurpose>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <div
               className={`
@@ -295,7 +288,7 @@ export const ProjectScore = ({
             >
               <ObjectiveBox
                 scoreKey={scoreKey}
-                goal={state.scores[scoreKey].map.winCondition}
+                goal={state.scores[scoreKey].winCondition}
                 label="WinCondition"
                 feedback={feedback}
                 preview={preview}
@@ -309,7 +302,7 @@ export const ProjectScore = ({
               {mobile && <Spacer />}
               <ObjectiveBox
                 scoreKey={scoreKey}
-                goal={state.scores[scoreKey].map.gainingGoal}
+                goal={state.scores[scoreKey].gainingGoal}
                 label="GainingGoal"
                 feedback={feedback}
                 preview={preview}

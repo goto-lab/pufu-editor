@@ -76,10 +76,10 @@ export const Edges = ({
     baseY: number
   ): PostionSet[] => {
     const score = scores[scoreKey];
-    const edges = score.map.purposes.map((p) => {
+    const edges = score.purposes.map((p) => {
       return [
         `${scoreKey}-purpose-${p.uuid}`,
-        `${scoreKey}-win-condition-${score.map.winCondition.uuid}`,
+        `${scoreKey}-win-condition-${score.winCondition.uuid}`,
         "win-condition",
         "line",
       ];
@@ -90,8 +90,8 @@ export const Edges = ({
       purpose: string;
     }
     const purposeMapping: purposeMap[] = [];
-    if (score.map.purposes.length > 0) {
-      score.map.purposes.forEach((purpose) => {
+    if (score.purposes.length > 0) {
+      score.purposes.forEach((purpose) => {
         purpose.measures.forEach((measure) => {
           if (measure.text && measureTexts.includes(measure.text)) {
             edges.push([

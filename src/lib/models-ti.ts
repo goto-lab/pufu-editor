@@ -52,11 +52,9 @@ export const EightElementsModel = t.iface([], {
 export const ElementLabel = t.union(t.lit("people"), t.lit("money"), t.lit("time"), t.lit("quality"), t.lit("businessScheme"), t.lit("environment"), t.lit("rival"), t.lit("foreignEnemy"));
 
 export const ProjectScoreModel = t.iface([], {
-  "map": t.iface([], {
-    "gainingGoal": "ObjectiveModel",
-    "winCondition": "ObjectiveModel",
-    "purposes": t.array("IntermediatePurposeModel"),
-  }),
+  "gainingGoal": "ObjectiveModel",
+  "winCondition": "ObjectiveModel",
+  "purposes": t.array("IntermediatePurposeModel"),
   "elements": "EightElementsModel",
 });
 

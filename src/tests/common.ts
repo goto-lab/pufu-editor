@@ -83,14 +83,14 @@ export const getMeasureCount = async (canvas: CanvasType) => {
 };
 export const createInitialScoreDataWithDuplication = () => {
   const score = createInitialScoreDataWithComment();
-  score.map.purposes.push({
+  score.purposes.push({
     ...defaultValueWithComment("中間目的"),
     measures: [
       defaultMeasureValueWithComment("施策3"),
       defaultMeasureValueWithComment("施策1"),
     ],
   });
-  score.map.purposes.push({
+  score.purposes.push({
     ...defaultValueWithComment("中間目的"),
     measures: [
       defaultMeasureValueWithComment("施策4"),
@@ -101,19 +101,17 @@ export const createInitialScoreDataWithDuplication = () => {
 };
 export const createInitialScoreDataWithComment = () => {
   return {
-    map: {
-      winCondition: defaultValueWithComment("勝利条件"),
-      gainingGoal: defaultValueWithComment("獲得目標"),
-      purposes: [
-        {
-          ...defaultValueWithComment("中間目的"),
-          measures: [
-            defaultMeasureValueWithComment("施策1"),
-            defaultMeasureValueWithComment("施策2"),
-          ],
-        },
-      ],
-    },
+    winCondition: defaultValueWithComment("勝利条件"),
+    gainingGoal: defaultValueWithComment("獲得目標"),
+    purposes: [
+      {
+        ...defaultValueWithComment("中間目的"),
+        measures: [
+          defaultMeasureValueWithComment("施策1"),
+          defaultMeasureValueWithComment("施策2"),
+        ],
+      },
+    ],
     elements: {
       people: defaultValueWithComment("ひと"),
       money: defaultValueWithComment("お金"),

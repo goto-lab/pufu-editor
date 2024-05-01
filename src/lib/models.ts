@@ -54,11 +54,9 @@ export type ElementLabel =
   | "foreignEnemy";
 
 export interface ProjectScoreModel {
-  map: {
-    gainingGoal: ObjectiveModel;
-    winCondition: ObjectiveModel;
-    purposes: IntermediatePurposeModel[];
-  };
+  gainingGoal: ObjectiveModel;
+  winCondition: ObjectiveModel;
+  purposes: IntermediatePurposeModel[];
   elements: EightElementsModel;
 }
 

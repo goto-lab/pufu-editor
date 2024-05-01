@@ -116,119 +116,117 @@ export const ImportButton = ({ onClick }: ImportButtonProps) => {
 };
 
 export const exampleData: ProjectScoreModel = {
-  map: {
-    winCondition: {
-      uuid: "er2ugQkdnw5WY2ceSGqVNV",
-      text: "人を惹きつけるようなオープンな開発をプ譜で体現する",
-      comment: {
-        color: "blue",
-        text: "",
-      },
+  winCondition: {
+    uuid: "er2ugQkdnw5WY2ceSGqVNV",
+    text: "人を惹きつけるようなオープンな開発をプ譜で体現する",
+    comment: {
+      color: "blue",
+      text: "",
     },
-    gainingGoal: {
-      uuid: "2MfGeLrm8PQaaVe3v3ABsV",
-      text: "プ譜や統合的な視点での考え方を開発者らしいやり方で伝え、よりよい社会づくりに繋げたい。",
-      comment: {
-        color: "blue",
-        text: "",
-      },
-    },
-    purposes: [
-      {
-        uuid: "9fov1Hdokf2NgsPkWgHatH",
-        text: "オープンな開発に挑戦する",
-        comment: {
-          color: "blue",
-          text: "",
-        },
-        measures: [
-          {
-            uuid: "dNmKUssH2tNG9k5cdato5a",
-            text: "OSSとしてコードを公開する",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "red",
-          },
-          {
-            uuid: "aUTXd41VA9FqT36QPDWhRW",
-            text: "OSSを開発する人たちと出会う",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "white",
-          },
-          {
-            uuid: "aUTXd41VA9FqT36QPDWhRA",
-            text: "OSSのイベントに参加する",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "white",
-          },
-        ],
-      },
-      {
-        uuid: "6dVHgBSKhKWrrnA7DP8pYJ",
-        text: "キックプ譜をより\n使いやすくする",
-        comment: {
-          color: "blue",
-          text: "",
-        },
-        measures: [
-          {
-            uuid: "cPUE9CEA4XqVKmRCP5LWdB",
-            text: "キックプ譜を開発する中で感じた機能的課題を解消する",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "white",
-          },
-          {
-            uuid: "vhKMTEwnoN3CZLmVYfDqHB",
-            text: "次局面の作成をしたくなるようなデザインを取り入れる",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "white",
-          },
-          {
-            uuid: "9ChYdz6X8JrfdA6EZmcJNb",
-            text: "プ譜の共有を通してプロジェクトに取り組む人たちを繋げ、その人達を活気づける",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "white",
-          },
-        ],
-      },
-      {
-        uuid: "bUSgSNsqhbe7J3tRx9YphR",
-        text: "気軽にプ譜をさわれる\nデモ環境をつくる",
-        comment: {
-          color: "blue",
-          text: "",
-        },
-        measures: [
-          {
-            uuid: "1FfnMYiJ9oXeSvARDLFp6B",
-            text: "ログイン不要のデモ環境を用意する",
-            comment: {
-              color: "blue",
-              text: "",
-            },
-            color: "white",
-          },
-        ],
-      },
-    ],
   },
+  gainingGoal: {
+    uuid: "2MfGeLrm8PQaaVe3v3ABsV",
+    text: "プ譜や統合的な視点での考え方を開発者らしいやり方で伝え、よりよい社会づくりに繋げたい。",
+    comment: {
+      color: "blue",
+      text: "",
+    },
+  },
+  purposes: [
+    {
+      uuid: "9fov1Hdokf2NgsPkWgHatH",
+      text: "オープンな開発に挑戦する",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      measures: [
+        {
+          uuid: "dNmKUssH2tNG9k5cdato5a",
+          text: "OSSとしてコードを公開する",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "red",
+        },
+        {
+          uuid: "aUTXd41VA9FqT36QPDWhRW",
+          text: "OSSを開発する人たちと出会う",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "white",
+        },
+        {
+          uuid: "aUTXd41VA9FqT36QPDWhRA",
+          text: "OSSのイベントに参加する",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "white",
+        },
+      ],
+    },
+    {
+      uuid: "6dVHgBSKhKWrrnA7DP8pYJ",
+      text: "キックプ譜をより\n使いやすくする",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      measures: [
+        {
+          uuid: "cPUE9CEA4XqVKmRCP5LWdB",
+          text: "キックプ譜を開発する中で感じた機能的課題を解消する",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "white",
+        },
+        {
+          uuid: "vhKMTEwnoN3CZLmVYfDqHB",
+          text: "次局面の作成をしたくなるようなデザインを取り入れる",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "white",
+        },
+        {
+          uuid: "9ChYdz6X8JrfdA6EZmcJNb",
+          text: "プ譜の共有を通してプロジェクトに取り組む人たちを繋げ、その人達を活気づける",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "white",
+        },
+      ],
+    },
+    {
+      uuid: "bUSgSNsqhbe7J3tRx9YphR",
+      text: "気軽にプ譜をさわれる\nデモ環境をつくる",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      measures: [
+        {
+          uuid: "1FfnMYiJ9oXeSvARDLFp6B",
+          text: "ログイン不要のデモ環境を用意する",
+          comment: {
+            color: "blue",
+            text: "",
+          },
+          color: "white",
+        },
+      ],
+    },
+  ],
   elements: {
     people: {
       uuid: "dSBEkjE97WJKusXj4mX3o9",
