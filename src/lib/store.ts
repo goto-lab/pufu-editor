@@ -64,16 +64,14 @@ export const createScoreKey = () => {
 
 export const createInitialScoreData = () => {
   return {
-    map: {
-      winCondition: defaultValue(),
-      gainingGoal: defaultValue(),
-      purposes: [
-        {
-          ...defaultValue(),
-          measures: [defaultMeasureValue(), defaultMeasureValue()],
-        },
-      ],
-    },
+    winCondition: defaultValue(),
+    gainingGoal: defaultValue(),
+    purposes: [
+      {
+        ...defaultValue(),
+        measures: [defaultMeasureValue(), defaultMeasureValue()],
+      },
+    ],
     elements: {
       people: defaultValue(),
       money: defaultValue(),
@@ -123,7 +121,7 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         winCondition: ObjectiveModel
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          state.scores[key].map.winCondition = winCondition;
+          state.scores[key].winCondition = winCondition;
         }
         return state.scores;
       };
@@ -139,7 +137,7 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         gainingGoal: ObjectiveModel
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          state.scores[key].map.gainingGoal = gainingGoal;
+          state.scores[key].gainingGoal = gainingGoal;
         }
         return state.scores;
       };
@@ -151,7 +149,7 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
     addPurpose: (key: string) => {
       const _ = (key: string, state: ProjectScoreStore): ProjectScoreMap => {
         if (key in state.scores) {
-          state.scores[key].map.purposes.push({
+          state.scores[key].purposes.push({
             ...defaultValue(),
             measures: [],
           });
@@ -170,12 +168,12 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         purpose: IntermediatePurposeModel
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          const index = state.scores[key].map.purposes.findIndex(
+          const index = state.scores[key].purposes.findIndex(
             (p) => p.uuid === purpose.uuid
           );
           if (index > -1) {
-            state.scores[key].map.purposes[index].text = purpose.text;
-            state.scores[key].map.purposes[index].comment = purpose.comment;
+            state.scores[key].purposes[index].text = purpose.text;
+            state.scores[key].purposes[index].comment = purpose.comment;
           }
         }
         return state.scores;
@@ -193,14 +191,14 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         offset: number
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          const index = state.scores[key].map.purposes.findIndex(
+          const index = state.scores[key].purposes.findIndex(
             (p) => p.uuid === purposeUuid
           );
           if (index > -1) {
-            const tmp = state.scores[key].map.purposes[index];
-            state.scores[key].map.purposes[index] =
-              state.scores[key].map.purposes[index + offset];
-            state.scores[key].map.purposes[index + offset] = tmp;
+            const tmp = state.scores[key].purposes[index];
+            state.scores[key].purposes[index] =
+              state.scores[key].purposes[index + offset];
+            state.scores[key].purposes[index + offset] = tmp;
           }
         }
         return state.scores;
@@ -217,9 +215,9 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         purposeUuid: string
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          state.scores[key].map.purposes = state.scores[
-            key
-          ].map.purposes.filter((p) => p.uuid !== purposeUuid);
+          state.scores[key].purposes = state.scores[key].purposes.filter(
+            (p) => p.uuid !== purposeUuid
+          );
         }
         return state.scores;
       };
@@ -235,12 +233,12 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         purposeUuid: string
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          const index = state.scores[key].map.purposes.findIndex(
+          const index = state.scores[key].purposes.findIndex(
             (p) => p.uuid === purposeUuid
           );
           if (index > -1) {
-            state.scores[key].map.purposes[index].measures = [
-              ...state.scores[key].map.purposes[index].measures,
+            state.scores[key].purposes[index].measures = [
+              ...state.scores[key].purposes[index].measures,
               defaultMeasureValue(),
             ];
           }
@@ -264,11 +262,11 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         measures: MeasureModel[]
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          const index = state.scores[key].map.purposes.findIndex(
+          const index = state.scores[key].purposes.findIndex(
             (p) => p.uuid === purposeUuid
           );
           if (index > -1) {
-            state.scores[key].map.purposes[index].measures = measures;
+            state.scores[key].purposes[index].measures = measures;
           }
         }
         return state.scores;
@@ -287,21 +285,21 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
       ): ProjectScoreMap => {
         if (key in state.scores) {
           const measureUuid = measure.uuid;
-          const purposeIndex = state.scores[key].map.purposes.findIndex(
+          const purposeIndex = state.scores[key].purposes.findIndex(
             (p) => p.uuid === purposeUuid
           );
           if (purposeIndex > -1) {
-            const measureIndex = state.scores[key].map.purposes[
+            const measureIndex = state.scores[key].purposes[
               purposeIndex
             ].measures.findIndex((m) => m.uuid === measureUuid);
             if (measureIndex > -1) {
-              state.scores[key].map.purposes[purposeIndex].measures[
+              state.scores[key].purposes[purposeIndex].measures[
                 measureIndex
               ].text = measure.text;
-              state.scores[key].map.purposes[purposeIndex].measures[
+              state.scores[key].purposes[purposeIndex].measures[
                 measureIndex
               ].color = measure.color;
-              state.scores[key].map.purposes[purposeIndex].measures[
+              state.scores[key].purposes[purposeIndex].measures[
                 measureIndex
               ].comment = measure.comment;
             }
@@ -320,15 +318,13 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
         measureUuid: string
       ): ProjectScoreMap => {
         if (key in state.scores) {
-          const index = state.scores[key].map.purposes.findIndex(
+          const index = state.scores[key].purposes.findIndex(
             (p) => p.uuid === purposeUuid
           );
           if (index > -1) {
-            state.scores[key].map.purposes[index].measures = state.scores[
+            state.scores[key].purposes[index].measures = state.scores[
               key
-            ].map.purposes[index].measures.filter(
-              (m) => m.uuid !== measureUuid
-            );
+            ].purposes[index].measures.filter((m) => m.uuid !== measureUuid);
           }
         }
         return state.scores;
