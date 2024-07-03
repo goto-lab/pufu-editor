@@ -1,6 +1,6 @@
 {
   "name": "@goto-lab/pufu-editor",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Web editor component for Project score (Pufu).",
   "main": "dist/index.js",
   "repository": {
@@ -17,7 +17,8 @@
     }
   },
   "scripts": {
-    "build": "npm run clean && tsc && npm run copy",
+    "build": "npm run clean && tsc && npm run copy && npm run build:css",
+    "build:css": "npx postcss src/index.css -o dist/index.css",
     "clean": "rimraf ./dist",
     "copy": "copyfiles -u 1 src/**/*.html src/*.css src/**/*.css dist/",
     "model-ti": "npx ts-interface-builder src/lib/models.ts",
@@ -72,6 +73,7 @@
     "eslint-plugin-tailwindcss": "^3.15.0",
     "http-server": "^14.1.1",
     "postcss": "^8.4.35",
+    "postcss-cli": "^11.0.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
     "react-dom": "^18.2.0",
