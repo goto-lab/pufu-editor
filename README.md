@@ -17,32 +17,7 @@
 プ譜エディタおよびTailwind CSSインストール
 
 ```
-npm install tailwindcss --save-dev
 npm install @goto-lab/pufu-editor
-```
-
-tailwind.config.jsの設定を変更
-
-```
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./node_modules/@goto-lab/pufu-editor/**/*.{js,jsx,ts,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-```
-
-src/index.cssに@tailwindディレクティブを追加
-
-```
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 ```
 
 src/App.js

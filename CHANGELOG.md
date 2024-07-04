@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.3] - 2024-07-04
+
+- Fix: build css with tailwind
+
 ## [0.9.0] - 2024-04-04
 
 Pufu edtior first release.
