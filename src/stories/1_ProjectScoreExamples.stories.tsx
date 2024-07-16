@@ -17,6 +17,14 @@ const meta = {
   component: ProjectScore,
   parameters: {
     layout: "fullscreen",
+    docs: {
+      description: {
+        component: `
+プ譜エディターは書籍『予定通り進まないプロジェクトの進め方』（著: 前田考歩、後藤洋平）で<br>
+紹介されているプロジェクト譜（プ譜）を Web ブラウザで編集・表示するためのエディターです。<br>
+Github: <a href="https://github.com/goto-lab/pufu-editor" target="_blank">goto-lab/pufu-editor</a>`,
+      },
+    },
   },
   tags: ["autodocs"],
 } satisfies Meta<typeof ProjectScore>;
