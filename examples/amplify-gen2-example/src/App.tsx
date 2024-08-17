@@ -182,7 +182,7 @@ function App() {
       {({ signOut, user }) => (
         <main className="px-16 py-8">
           <h1 className="text-3xl font-bold underline">
-            Example: Pufu edtior + Amplify Gen2
+            Example: Pufu editor + Amplify Gen2
           </h1>
           <div className="py-2">
             {user?.signInDetails?.loginId}'s scores{" "}
