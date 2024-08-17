@@ -21,12 +21,9 @@ function App() {
   const [projects, setProjects] = useState<Array<Schema["Project"]["type"]>>(
     []
   );
-  const [projectTitle, setProjectTitle] = useState("-");
-
   const [score, setScore] = useState<Schema["Score"]["type"]>();
-
+  const [projectTitle, setProjectTitle] = useState("-");
   const [loading, setLoading] = useState(false);
-
   const [commentMode, setCommentMode] = useState(false);
 
   useEffect(() => {
