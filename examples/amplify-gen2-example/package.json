@@ -13,11 +13,11 @@
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.1.14",
-    "@goto-lab/pufu-editor": "^0.9.4",
+    "@goto-lab/pufu-editor": "^0.9.5",
     "aws-amplify": "^6.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "short-uuid": "^5.2.0"
+    "short-uuid": "^4.2.2"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.0.4",
