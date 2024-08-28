@@ -1,6 +1,6 @@
 {
   "name": "@goto-lab/pufu-editor",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Web editor component for Project score (Pufu).",
   "main": "dist/index.js",
   "repository": {
