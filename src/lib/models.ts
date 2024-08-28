@@ -1,3 +1,5 @@
+export type TextSize = "small" | "base" | "large";
+
 export type CommentColor = "blue" | "green" | "red";
 
 export interface CommentModel {

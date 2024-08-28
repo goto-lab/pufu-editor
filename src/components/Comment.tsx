@@ -1,10 +1,10 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { i18n } from "i18next";
 import TextareaAutosize from "react-textarea-autosize";
 import { IoColorPaletteOutline } from "react-icons/io5";
 import { RxDotFilled } from "react-icons/rx";
-import { CommentModel, CommentColor } from "../lib/models";
-import { useClickEffect } from "../lib/hooks";
+import { CommentModel, CommentColor, TextSize } from "../lib/models";
+import { useClickEffect, useTextSize } from "../lib/hooks";
 import styles from "./Comment.module.css";
 
 export interface CommentProps {
@@ -14,6 +14,7 @@ export interface CommentProps {
   dark?: boolean;
   upside?: boolean;
   i18n?: i18n;
+  textSize?: TextSize;
   rolePrefix?: string;
 }
 
@@ -24,6 +25,7 @@ export const Comment = ({
   upside = false,
   dark = false,
   i18n,
+  textSize = "small",
   rolePrefix = "",
 }: CommentProps) => {
   const [text, setText] = useState(comment.text);
@@ -60,6 +62,13 @@ export const Comment = ({
     },
   };
   const role = rolePrefix === "" ? "comment" : `${rolePrefix}-comment`;
+  const textSizeStyle = useTextSize(textSize);
+
+  useEffect(() => {
+    setText(comment.text);
+    setColor(comment.color);
+  }, [comment]);
+
   return (
     <div
       className={`
@@ -82,7 +91,7 @@ export const Comment = ({
           resize-none
           py-2
           text-left
-          text-sm
+          ${textSizeStyle}
           leading-4
           text-gray-600
           outline-none

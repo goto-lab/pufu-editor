@@ -6,6 +6,8 @@ import {
   whiteTest,
   feedbackTest,
   previewTest,
+  textBaseTest,
+  textLargeTest,
 } from "../tests/Measure.stories.test";
 import i18n from "../i18n/config";
 i18n.changeLanguage("ja");
@@ -33,8 +35,6 @@ export const White: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
     i18n: i18n,
   },
   render: function Comp({ ...args }) {
@@ -69,8 +69,6 @@ export const Blue: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
     i18n: i18n,
   },
 };
@@ -85,8 +83,6 @@ export const Green: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
     i18n: i18n,
   },
 };
@@ -102,8 +98,6 @@ export const Red: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
     i18n: i18n,
   },
 };
@@ -119,8 +113,6 @@ export const Yellow: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
     i18n: i18n,
   },
 };
@@ -135,8 +127,6 @@ export const Feedback: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
     i18n: i18n,
   },
   render: function Comp({ ...args }) {
@@ -172,8 +162,6 @@ export const Preview: Story = {
         text: "",
       },
     },
-    index: 0,
-    count: 1,
   },
   render: function Comp({ ...args }) {
     const [measure, setMeasure] = useState<MeasureModel>({
@@ -196,4 +184,38 @@ export const Preview: Story = {
     );
   },
   play: previewTest,
+};
+
+export const TextBase: Story = {
+  args: {
+    measure: {
+      uuid: "1234",
+      color: "green",
+      text: "サンプルテキスト",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+    },
+    i18n: i18n,
+    textSize: "base",
+  },
+  play: textBaseTest,
+};
+
+export const TextLarge: Story = {
+  args: {
+    measure: {
+      uuid: "1234",
+      color: "green",
+      text: "サンプルテキスト",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+    },
+    i18n: i18n,
+    textSize: "large",
+  },
+  play: textLargeTest,
 };

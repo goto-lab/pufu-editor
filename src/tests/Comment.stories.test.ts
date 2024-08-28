@@ -19,6 +19,7 @@ export const blueTest = async ({ canvasElement }: StorybookTestProps) => {
   ).toBeInTheDocument();
 
   const textbox = await canvas.findByRole("comment", { name: "textbox" });
+  await expect(textbox).toHaveClass("text-sm");
   await userEvent.click(textbox);
 
   await userEvent.type(textbox, "サンプルテキストです");
@@ -64,4 +65,20 @@ export const previewTest = async ({ canvasElement }: StorybookTestProps) => {
   expect(textbox).toBeInTheDocument();
   await canvas.findByDisplayValue("サンプルテキストです");
   expect(textbox).toHaveAttribute("readonly");
+};
+
+export const textBaseTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const textbox = await canvas.findByRole("comment", { name: "textbox" });
+  await expect(textbox).not.toHaveClass("text-sm");
+  await expect(textbox).toHaveClass("text-base");
+  await expect(textbox).not.toHaveClass("text-lg");
+};
+
+export const textLargeTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const textbox = await canvas.findByRole("comment", { name: "textbox" });
+  await expect(textbox).not.toHaveClass("text-sm");
+  await expect(textbox).not.toHaveClass("text-base");
+  await expect(textbox).toHaveClass("text-lg");
 };

@@ -1,7 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createProjectScoreStore, createInitialScoreData } from "./store";
-import { ProjectScoreModel, SupportLanguage } from "./models";
+import { ProjectScoreModel, SupportLanguage, TextSize } from "./models";
 
 export const useClickEffect = (
   insideCallback: () => void,
@@ -46,4 +46,19 @@ export const useI18Translation = (lang: SupportLanguage) => {
     i18n.changeLanguage(lang);
   }, [lang]);
   return { i18n };
+};
+
+export const useTextSize = (textSize: TextSize) => {
+  return useMemo(() => {
+    switch (textSize) {
+      case "small":
+        return "text-sm";
+      case "base":
+        return "text-base leading-relaxed";
+      case "large":
+        return "text-lg leading-relaxed";
+      default:
+        return "text-sm";
+    }
+  }, [textSize]);
 };

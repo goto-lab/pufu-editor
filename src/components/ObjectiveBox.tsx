@@ -3,7 +3,13 @@ import { i18n } from "i18next";
 import TextareaAutosize from "react-textarea-autosize";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { Comment } from "./Comment";
-import { ObjectiveModel, ObjectiveLabel, CommentModel } from "../lib/models";
+import {
+  ObjectiveModel,
+  ObjectiveLabel,
+  CommentModel,
+  TextSize,
+} from "../lib/models";
+import { useTextSize } from "../lib/hooks";
 
 export interface ObjectiveBoxProps {
   goal: ObjectiveModel;
@@ -15,6 +21,7 @@ export interface ObjectiveBoxProps {
   dark?: boolean;
   mobile?: boolean;
   i18n?: i18n;
+  textSize?: TextSize;
 }
 
 export const ObjectiveBox = ({
@@ -27,6 +34,7 @@ export const ObjectiveBox = ({
   dark = false,
   mobile = false,
   i18n,
+  textSize = "small",
 }: ObjectiveBoxProps) => {
   const [text, setText] = useState(goal.text);
   const [comment, setComment] = useState(goal.comment);
@@ -49,6 +57,8 @@ export const ObjectiveBox = ({
   };
   const role = label === "WinCondition" ? "win-condition" : "gaining-goal";
 
+  const textSizeStyle = useTextSize(textSize);
+
   useEffect(() => {
     setText(goal.text);
     setComment(goal.comment);
@@ -65,6 +75,7 @@ export const ObjectiveBox = ({
             dark={dark}
             upside={true}
             i18n={i18n}
+            textSize={textSize}
             rolePrefix={role}
           ></Comment>
         </div>
@@ -90,7 +101,7 @@ export const ObjectiveBox = ({
             resize-none
             px-2 py-1
             text-left
-            text-sm
+            ${textSizeStyle}
             leading-4
             text-gray-600
             outline-none
@@ -135,6 +146,7 @@ export const ObjectiveBox = ({
             preview={preview}
             dark={dark}
             i18n={i18n}
+            textSize={textSize}
             rolePrefix={role}
           ></Comment>
         </div>

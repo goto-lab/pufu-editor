@@ -9,8 +9,12 @@ import {
   IoArrowDownCircleOutline,
 } from "react-icons/io5";
 import { Comment } from "./Comment";
-import { IntermediatePurposeModel, CommentModel } from "../lib/models";
-import { useClickEffect } from "../lib/hooks";
+import {
+  IntermediatePurposeModel,
+  CommentModel,
+  TextSize,
+} from "../lib/models";
+import { useClickEffect, useTextSize } from "../lib/hooks";
 
 export interface IntermediatePurposeProps {
   purpose: IntermediatePurposeModel;
@@ -29,6 +33,7 @@ export interface IntermediatePurposeProps {
   dark?: boolean;
   mobile?: boolean;
   i18n?: i18n;
+  textSize?: TextSize;
 }
 
 export const IntermediatePurpose = ({
@@ -48,6 +53,7 @@ export const IntermediatePurpose = ({
   dark = false,
   mobile = false,
   i18n,
+  textSize = "small",
 }: IntermediatePurposeProps) => {
   const [text, setText] = useState(purpose.text);
   const [comment, setComment] = useState(purpose.comment);
@@ -72,6 +78,8 @@ export const IntermediatePurpose = ({
   const handleDelete = () => {
     onDelete?.(purpose);
   };
+
+  const textSizeStyle = useTextSize(textSize);
 
   useEffect(() => {
     setText(purpose.text);
@@ -115,7 +123,7 @@ export const IntermediatePurpose = ({
             bg-transparent
             py-2
             text-center
-            text-sm
+            ${textSizeStyle}
             leading-4
             text-gray-600
             outline-none
@@ -176,6 +184,7 @@ export const IntermediatePurpose = ({
             preview={preview}
             dark={dark}
             i18n={i18n}
+            textSize={textSize}
             rolePrefix="purpose"
           ></Comment>
         </div>

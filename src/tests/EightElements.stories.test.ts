@@ -33,6 +33,7 @@ export const editTest = async ({ canvasElement }: StorybookTestProps) => {
     const textBox = await canvas.findByRole("element", {
       name: `${key}-textbox`,
     });
+    await expect(textBox).toHaveClass("text-sm");
     await userEvent.type(textBox, `${labels[key]}のテキスト`);
     expect(
       await canvas.findByDisplayValue(`${labels[key]}のテキスト`)
@@ -141,5 +142,63 @@ export const previewTest = async ({ canvasElement }: StorybookTestProps) => {
     });
     expect(commentTexbox).toHaveAttribute("readonly");
     expect(await canvas.findByDisplayValue(`${labels[key]}のコメント`));
+  }
+};
+
+export const TextBaseTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+
+  const elements = await canvas.findByRole("elements", { name: "box" });
+  expect(elements).toBeInTheDocument();
+
+  type LabelType = {
+    [K in string]: string;
+  };
+  const labels: LabelType = {
+    people: "ひと",
+    money: "お金",
+    time: "時間",
+    quality: "クオリティ",
+    businessScheme: "商流 / 座組",
+    environment: "環境",
+    rival: "ライバル",
+    foreignEnemy: "外敵",
+  };
+  for (const key of Object.keys(labels)) {
+    const textbox = await canvas.findByRole("element", {
+      name: `${key}-textbox`,
+    });
+    await expect(textbox).not.toHaveClass("text-sm");
+    await expect(textbox).toHaveClass("text-base");
+    await expect(textbox).not.toHaveClass("text-lg");
+  }
+};
+
+export const TextLargeTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+
+  const elements = await canvas.findByRole("elements", { name: "box" });
+  expect(elements).toBeInTheDocument();
+
+  type LabelType = {
+    [K in string]: string;
+  };
+  const labels: LabelType = {
+    people: "ひと",
+    money: "お金",
+    time: "時間",
+    quality: "クオリティ",
+    businessScheme: "商流 / 座組",
+    environment: "環境",
+    rival: "ライバル",
+    foreignEnemy: "外敵",
+  };
+  for (const key of Object.keys(labels)) {
+    const textbox = await canvas.findByRole("element", {
+      name: `${key}-textbox`,
+    });
+    await expect(textbox).not.toHaveClass("text-sm");
+    await expect(textbox).not.toHaveClass("text-base");
+    await expect(textbox).toHaveClass("text-lg");
   }
 };

@@ -9,6 +9,8 @@ import {
   topTest,
   feedbackTest,
   previewTest,
+  textLargeTest,
+  textBaseTest,
 } from "../tests/IntermediatePurpose.stories.test";
 import i18n from "../i18n/config";
 i18n.changeLanguage("ja");
@@ -146,4 +148,46 @@ export const Preview: Story = {
     i18n: i18n,
   },
   play: previewTest,
+};
+
+export const TextBase: Story = {
+  args: {
+    purpose: {
+      uuid: "123",
+      text: "サンプルテキストです。",
+      comment: {
+        color: "blue",
+        text: "コメントのテキストです。",
+      },
+      measures: [],
+    },
+    preview: true,
+    index: 0,
+    count: 1,
+    preveMeasureCount: 0,
+    i18n: i18n,
+    textSize: "base",
+  },
+  play: textBaseTest,
+};
+
+export const TextLarge: Story = {
+  args: {
+    purpose: {
+      uuid: "123",
+      text: "サンプルテキストです。",
+      comment: {
+        color: "blue",
+        text: "コメントのテキストです。",
+      },
+      measures: [],
+    },
+    preview: true,
+    index: 0,
+    count: 1,
+    preveMeasureCount: 0,
+    i18n: i18n,
+    textSize: "large",
+  },
+  play: textLargeTest,
 };

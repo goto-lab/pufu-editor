@@ -1,6 +1,11 @@
 import { i18n } from "i18next";
 import { ElementBox } from "./ElementBox";
-import { ElementModel, EightElementsModel, ElementLabel } from "../lib/models";
+import {
+  ElementModel,
+  EightElementsModel,
+  ElementLabel,
+  TextSize,
+} from "../lib/models";
 
 export interface EightElementsProps {
   elements: EightElementsModel;
@@ -11,6 +16,8 @@ export interface EightElementsProps {
   dark?: boolean;
   mobile?: boolean;
   i18n?: i18n;
+  textSize?: TextSize;
+  border?: boolean;
 }
 
 export const EightElements = ({
@@ -22,6 +29,8 @@ export const EightElements = ({
   dark = false,
   mobile = false,
   i18n,
+  textSize = "small",
+  border = true,
 }: EightElementsProps) => {
   const handleChange = (element: ElementModel, key: string) => {
     onChange?.({ ...elements, [key]: element });
@@ -52,6 +61,7 @@ export const EightElements = ({
         dark={dark}
         mobile={mobile}
         i18n={i18n}
+        textSize={textSize}
       />
     );
   }
@@ -59,7 +69,7 @@ export const EightElements = ({
     <div
       className={`
         ${mobile && "grid grid-cols-2 bg-gray-100 dark:bg-gray-800"}
-        border-2
+        ${border ? "border-2" : mobile ? "border-t-2" : "border-r-2"}
         border-gray-300 px-1
         dark:border-gray-600
         pt-1

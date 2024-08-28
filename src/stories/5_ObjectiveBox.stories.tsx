@@ -7,6 +7,8 @@ import {
   feedbackTest,
   gainingGoalTest,
   previewTest,
+  TextBaseTest,
+  TextLargeTest,
   winConditionTest,
 } from "../tests/Objective.stories.test";
 import i18n from "../i18n/config";
@@ -110,4 +112,42 @@ export const Preview: Story = {
     i18n: i18n,
   },
   play: previewTest,
+};
+
+export const TextBase: Story = {
+  args: {
+    label: "WinCondition",
+    goal: {
+      uuid: "123",
+      text: "サンプルテキストです。",
+      comment: {
+        color: "blue",
+        text: "コメントのテキストです。",
+      },
+    },
+    feedback: true,
+    preview: true,
+    i18n: i18n,
+    textSize: "base",
+  },
+  play: TextBaseTest,
+};
+
+export const TextLarge: Story = {
+  args: {
+    label: "WinCondition",
+    goal: {
+      uuid: "123",
+      text: "サンプルテキストです。",
+      comment: {
+        color: "blue",
+        text: "コメントのテキストです。",
+      },
+    },
+    feedback: true,
+    preview: true,
+    i18n: i18n,
+    textSize: "large",
+  },
+  play: TextLargeTest,
 };

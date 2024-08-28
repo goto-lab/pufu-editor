@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { ReactSortable } from "react-sortablejs";
 import domtoimage from "dom-to-image";
 import modelsTI from "../lib/models-ti";
 import { i18n } from "i18next";
 import "../i18n/config";
 import { createCheckers } from "ts-interface-checker";
-import { ProjectScoreModel, SupportLanguage } from "../lib/models";
+import { ProjectScoreModel, SupportLanguage, TextSize } from "../lib/models";
 import { createScoreKey, ProjectScoreStore } from "../lib/store";
 import { useProjectScoreStoreEffect, useI18Translation } from "../lib/hooks";
 import { EightElements } from "./EightElements";
@@ -23,6 +23,9 @@ export interface ProjectScoreProps {
   dark?: boolean;
   mobile?: boolean;
   lang?: SupportLanguage;
+  textSize?: TextSize;
+  width?: number;
+  border?: boolean;
 }
 
 let state: ProjectScoreStore;
@@ -35,8 +38,12 @@ export const ProjectScore = ({
   dark = false,
   mobile = false,
   lang = "ja",
+  textSize = "small",
+  width,
+  border = true,
 }: ProjectScoreProps) => {
   const [scoreKey] = useState(uniqueKey ?? createScoreKey());
+  const scoreRef = useRef<HTMLDivElement | null>(null);
 
   const [action, setAction] = useState(false);
   const updateAction = () => {
@@ -73,13 +80,23 @@ export const ProjectScore = ({
     return false;
   };
 
+  const scoreStyle = useMemo(() => {
+    return width
+      ? {
+          width: `${width}px`,
+        }
+      : {};
+  }, [width]);
+
   return (
     <>
       {scoreKey in state.scores ? (
         <div
           id={`score-${scoreKey}`}
           className={`relative ${mobile ? "px-4" : "flex justify-center"} ${dark ? "dark" : ""}`}
-          onClick={updateAction}
+          style={scoreStyle}
+          ref={scoreRef}
+          onMouseEnter={updateAction}
           role="score"
           aria-label="box"
         >
@@ -92,7 +109,7 @@ export const ProjectScore = ({
             ></Edges>
           )}
           {!mobile && (
-            <div className={`w-[22%] min-w-48`}>
+            <div className={`w-[22%] h-full min-w-48`}>
               <EightElements
                 scoreKey={scoreKey}
                 elements={state.scores[scoreKey].elements}
@@ -100,6 +117,8 @@ export const ProjectScore = ({
                 preview={preview}
                 dark={dark}
                 i18n={i18n}
+                textSize={textSize}
+                border={border}
                 onChange={(elements) => {
                   state.setEightElements(scoreKey, elements);
                 }}
@@ -109,8 +128,16 @@ export const ProjectScore = ({
           <div
             className={`
               flex justify-center pb-4
-              bg-white dark:bg-gray-900
-              ${mobile ? "border-x-2 border-t-2" : "w-[78%] border-y-2 border-r-2"}
+            bg-white dark:bg-gray-900
+              ${
+                mobile
+                  ? border
+                    ? "border-x-2 border-t-2"
+                    : ""
+                  : border
+                    ? "w-[78%] border-y-2 border-r-2"
+                    : "w-[78%]"
+              }
             border-gray-300 dark:border-gray-600
             `}
           >
@@ -175,14 +202,13 @@ export const ProjectScore = ({
                           >
                             <Measure
                               scoreKey={scoreKey}
-                              index={measureIndex}
-                              count={purpose.measures.length}
                               measure={measure}
                               feedback={feedback}
                               preview={preview}
                               dark={dark}
                               mobile={mobile}
                               i18n={i18n}
+                              textSize={textSize}
                               hidden={hideMeasure(
                                 purposeIndex,
                                 measureIndex,
@@ -274,6 +300,7 @@ export const ProjectScore = ({
                         dark={dark}
                         mobile={mobile}
                         i18n={i18n}
+                        textSize={textSize}
                       ></IntermediatePurpose>
                     </div>
                   </div>
@@ -295,6 +322,7 @@ export const ProjectScore = ({
                 dark={dark}
                 mobile={mobile}
                 i18n={i18n}
+                textSize={textSize}
                 onChange={(objective) => {
                   state.setWinCondition(scoreKey, objective);
                 }}
@@ -309,6 +337,7 @@ export const ProjectScore = ({
                 dark={dark}
                 mobile={mobile}
                 i18n={i18n}
+                textSize={textSize}
                 onChange={(objective) => {
                   state.setGainingGoal(scoreKey, objective);
                 }}
@@ -323,6 +352,8 @@ export const ProjectScore = ({
               mobile={mobile}
               dark={dark}
               i18n={i18n}
+              textSize={textSize}
+              border={border}
               onChange={(elements) => {
                 state.setEightElements(scoreKey, elements);
               }}

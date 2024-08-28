@@ -3,7 +3,12 @@ import { StoryObj, Meta } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { Comment } from "../components/Comment";
 import { CommentModel } from "../lib/models";
-import { blueTest, previewTest } from "../tests/Comment.stories.test";
+import {
+  blueTest,
+  previewTest,
+  textBaseTest,
+  textLargeTest,
+} from "../tests/Comment.stories.test";
 import i18n from "../i18n/config";
 import { useI18Translation } from "../lib/hooks";
 i18n.changeLanguage("ja");
@@ -81,4 +86,28 @@ export const preview: Story = {
     preview: true,
   },
   play: previewTest,
+};
+
+export const textBase: Story = {
+  args: {
+    comment: {
+      color: "blue",
+      text: "サンプルテキストです",
+    },
+    textSize: "base",
+    onChange: fn(),
+  },
+  play: textBaseTest,
+};
+
+export const textLarge: Story = {
+  args: {
+    comment: {
+      color: "blue",
+      text: "サンプルテキストです",
+    },
+    textSize: "large",
+    onChange: fn(),
+  },
+  play: textLargeTest,
 };

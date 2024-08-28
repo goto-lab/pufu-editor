@@ -99,3 +99,23 @@ export const Preview: Story = {
   },
   play: previewTest,
 };
+
+export const TextBase: Story = {
+  args: {
+    elements: commentElements,
+    preview: true,
+    i18n: i18n,
+    textSize: "base",
+  },
+  play: previewTest,
+};
+
+export const TextLarge: Story = {
+  args: {
+    elements: commentElements,
+    preview: true,
+    i18n: i18n,
+    textSize: "large",
+  },
+  play: previewTest,
+};
