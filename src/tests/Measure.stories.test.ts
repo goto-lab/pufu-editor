@@ -16,6 +16,7 @@ export const whiteTest = async ({ canvasElement }: StorybookTestProps) => {
   expect(canvas.queryByRole("measure", { name: "delete-icon" })).toBeNull();
   expect(canvas.queryByRole("measure", { name: "palette-icon" })).toBeNull();
   const textbox = await canvas.findByRole("measure", { name: "textbox" });
+  await expect(textbox).toHaveClass("text-sm");
   await userEvent.click(textbox);
   expect(
     await canvas.findByRole("measure", { name: "delete-icon" })
@@ -162,4 +163,20 @@ export const previewTest = async ({ canvasElement }: StorybookTestProps) => {
   });
   expect(commentTexbox).toHaveAttribute("readonly");
   expect(await canvas.findByDisplayValue("コメントのテキストです。"));
+};
+
+export const textBaseTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const textbox = await canvas.findByRole("measure", { name: "textbox" });
+  await expect(textbox).not.toHaveClass("text-sm");
+  await expect(textbox).toHaveClass("text-base");
+  await expect(textbox).not.toHaveClass("text-lg");
+};
+
+export const textLargeTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const textbox = await canvas.findByRole("measure", { name: "textbox" });
+  await expect(textbox).not.toHaveClass("text-sm");
+  await expect(textbox).not.toHaveClass("text-base");
+  await expect(textbox).toHaveClass("text-lg");
 };

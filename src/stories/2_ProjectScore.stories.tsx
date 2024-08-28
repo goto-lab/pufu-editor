@@ -121,3 +121,26 @@ export const Download: Story = {
     );
   },
 };
+
+export const NoBorder: Story = {
+  args: {
+    initScore: createInitialScoreDataWithComment(),
+    feedback: true,
+    border: false,
+  },
+};
+
+export const TextBase: Story = {
+  args: {
+    initScore: createInitialScoreDataWithComment(),
+    feedback: false,
+    textSize: "base",
+  },
+};
+export const TextLarge: Story = {
+  args: {
+    initScore: createInitialScoreDataWithComment(),
+    feedback: true,
+    textSize: "large",
+  },
+};

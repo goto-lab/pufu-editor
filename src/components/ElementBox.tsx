@@ -3,7 +3,13 @@ import { i18n } from "i18next";
 import TextareaAutosize from "react-textarea-autosize";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { Comment } from "./Comment";
-import { ElementModel, ElementLabel, CommentModel } from "../lib/models";
+import {
+  ElementModel,
+  ElementLabel,
+  CommentModel,
+  TextSize,
+} from "../lib/models";
+import { useTextSize } from "../lib/hooks";
 
 export interface ElementBoxProps {
   scoreKey: string;
@@ -15,6 +21,7 @@ export interface ElementBoxProps {
   dark?: boolean;
   mobile?: boolean;
   i18n?: i18n;
+  textSize?: TextSize;
 }
 
 export const ElementBox = ({
@@ -27,6 +34,7 @@ export const ElementBox = ({
   dark = false,
   mobile = false,
   i18n,
+  textSize = "small",
 }: ElementBoxProps) => {
   const [text, setText] = useState(element.text);
   const [comment, setComment] = useState(element.comment);
@@ -48,13 +56,15 @@ export const ElementBox = ({
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  const textSizeStyle = useTextSize(textSize);
+
   useEffect(() => {
     setText(element.text);
     setComment(element.comment);
   }, [element]);
 
   return (
-    <div className="pb-1" role="element" aria-label={label}>
+    <div className="pb-3" role="element" aria-label={label}>
       <div
         id={`${scoreKey}-element-${label}`}
         className={`
@@ -75,8 +85,8 @@ export const ElementBox = ({
               bg-white 
               text-gray-300
                 hover:cursor-pointer
-                hover:text-gray-400
-                dark:bg-gray-900 
+              hover:text-gray-400
+              dark:bg-gray-900 
               `}
               size={25}
               onClick={() => {
@@ -94,7 +104,7 @@ export const ElementBox = ({
             resize-none
             pl-1 pt-1
             text-left
-            text-sm
+            ${textSizeStyle}
             leading-4
             text-gray-600
             outline-none
@@ -103,7 +113,7 @@ export const ElementBox = ({
             dark:bg-gray-900
             dark:text-gray-200
           `}
-          minRows={2}
+          minRows={1}
           placeholder={
             preview ? "" : i18n && i18n.t(`msg.Input${capitalize(label)}`)
           }

@@ -124,3 +124,23 @@ export const previewTest = async ({ canvasElement }: StorybookTestProps) => {
   expect(commentTexbox).toHaveAttribute("readonly");
   expect(await canvas.findByDisplayValue("コメントのテキストです。"));
 };
+
+export const TextBaseTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const textbox = await canvas.findByRole("win-condition", {
+    name: "textbox",
+  });
+  await expect(textbox).not.toHaveClass("text-sm");
+  await expect(textbox).toHaveClass("text-base");
+  await expect(textbox).not.toHaveClass("text-lg");
+};
+
+export const TextLargeTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const textbox = await canvas.findByRole("win-condition", {
+    name: "textbox",
+  });
+  await expect(textbox).not.toHaveClass("text-sm");
+  await expect(textbox).not.toHaveClass("text-base");
+  await expect(textbox).toHaveClass("text-lg");
+};

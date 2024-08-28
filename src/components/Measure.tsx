@@ -10,13 +10,16 @@ import { GoPlusCircle } from "react-icons/go";
 import { RxDotFilled } from "react-icons/rx";
 import { MdDragIndicator } from "react-icons/md";
 import { Comment } from "./Comment";
-import { MeasureModel, MeasureColor, CommentModel } from "../lib/models";
-import { useClickEffect } from "../lib/hooks";
+import {
+  MeasureModel,
+  MeasureColor,
+  CommentModel,
+  TextSize,
+} from "../lib/models";
+import { useClickEffect, useTextSize } from "../lib/hooks";
 
 export interface MeasureProps {
   measure: MeasureModel;
-  index: number;
-  count: number;
   hidden?: boolean;
   onChange?: (measure: MeasureModel) => void;
   onDelete?: (measure: MeasureModel) => void;
@@ -26,6 +29,7 @@ export interface MeasureProps {
   dark?: boolean;
   mobile?: boolean;
   i18n?: i18n;
+  textSize?: TextSize;
 }
 
 export const Measure = ({
@@ -39,6 +43,7 @@ export const Measure = ({
   dark = false,
   mobile = false,
   i18n,
+  textSize = "small",
 }: MeasureProps) => {
   const [text, setText] = useState(measure.text);
   const [color, setColor] = useState(measure.color);
@@ -105,6 +110,8 @@ export const Measure = ({
     },
   };
 
+  const textSizeStyle = useTextSize(textSize);
+
   useEffect(() => {
     setText(measure.text);
     setColor(measure.color);
@@ -143,7 +150,7 @@ export const Measure = ({
             bg-transparent
             py-1
             text-left
-            text-sm
+            ${textSizeStyle}
             leading-4
             text-gray-600
             outline-none
@@ -252,6 +259,7 @@ export const Measure = ({
             preview={preview}
             dark={dark}
             i18n={i18n}
+            textSize={textSize}
             rolePrefix="measure"
           ></Comment>
         </div>
