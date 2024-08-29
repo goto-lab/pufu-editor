@@ -34,23 +34,9 @@ export const Edges = ({
 
   useLayoutEffect(() => {
     updateEdges();
-    const observer = new ResizeObserver((entries) => {
-      entries.forEach(() => {
-        updateEdges();
-      });
-    });
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-    // ResizeObserver is not working at Safari 16.6
-    if (isSafari) {
-      window.addEventListener("resize", updateEdges);
-    }
+    window.addEventListener("resize", updateEdges);
     return () => {
-      observer.disconnect();
-      if (isSafari) {
-        window.removeEventListener("resize", updateEdges);
-      }
+      window.removeEventListener("resize", updateEdges);
     };
   }, [scores, action]);
 
