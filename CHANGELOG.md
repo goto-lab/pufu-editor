@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.9.6] - 2024-08-28
+
+- Fix: Modify for business card design
+  - Add: text size option
+  - Add: score width option
+  - Add: score border option
+  - Fix: data refresh bug fix
+
 ## [0.9.5] - 2024-08-20
 
 - Fix: Update Node.js version from 18 to 20
