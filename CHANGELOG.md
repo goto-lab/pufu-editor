@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.7] - 2024-08-29
+
+- Fix: edge draws bug at resize
+
 ## [0.9.6] - 2024-08-28
 
 - Fix: Modify for business card design
