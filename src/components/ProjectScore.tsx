@@ -96,7 +96,6 @@ export const ProjectScore = ({
           className={`relative ${mobile ? "px-4" : "flex justify-center"} ${dark ? "dark" : ""}`}
           style={scoreStyle}
           ref={scoreRef}
-          onMouseEnter={updateAction}
           role="score"
           aria-label="box"
         >
