@@ -93,9 +93,11 @@ export const ProjectScore = ({
       {scoreKey in state.scores ? (
         <div
           id={`score-${scoreKey}`}
-          className={`relative ${mobile ? "px-4" : "flex justify-center"} ${dark ? "dark" : ""}`}
+          className={`relative ${border ? "border-2" : ""} ${mobile ? "px-4" : "flex justify-center"} ${dark ? "dark" : ""}`}
           style={scoreStyle}
           ref={scoreRef}
+          onMouseEnter={updateAction}
+          onClick={updateAction}
           role="score"
           aria-label="box"
         >
@@ -128,15 +130,7 @@ export const ProjectScore = ({
             className={`
               flex justify-center pb-4
             bg-white dark:bg-gray-900
-              ${
-                mobile
-                  ? border
-                    ? "border-x-2 border-t-2"
-                    : ""
-                  : border
-                    ? "w-[78%] border-y-2 border-r-2"
-                    : "w-[78%]"
-              }
+              ${mobile ? "" : "w-[78%] border-l-2"}
             border-gray-300 dark:border-gray-600
             `}
           >
