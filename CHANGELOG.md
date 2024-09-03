@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.8] - 2024-09-03
+
+- Fix: Score border layout bug
+
 ## [0.9.7] - 2024-08-29
 
 - Fix: edge draws bug at resize
