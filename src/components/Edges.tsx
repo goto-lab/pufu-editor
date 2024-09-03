@@ -34,8 +34,15 @@ export const Edges = ({
 
   useLayoutEffect(() => {
     updateEdges();
+    const observer = new ResizeObserver(() => {
+      updateEdges();
+    });
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
     window.addEventListener("resize", updateEdges);
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", updateEdges);
     };
   }, [scores, action]);
@@ -117,7 +124,7 @@ export const Edges = ({
         dashed: edge[3] === "dashed",
       };
       if (edge[2] === "win-condition") {
-        point.right.x -= 1;
+        point.right.x += 1;
         point.right.y -= isSafari ? (preview ? 10 : 1) : preview ? 16 : 3;
       } else {
         point.left.x += 1;

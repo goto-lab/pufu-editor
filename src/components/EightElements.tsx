@@ -30,7 +30,6 @@ export const EightElements = ({
   mobile = false,
   i18n,
   textSize = "small",
-  border = true,
 }: EightElementsProps) => {
   const handleChange = (element: ElementModel, key: string) => {
     onChange?.({ ...elements, [key]: element });
@@ -69,7 +68,6 @@ export const EightElements = ({
     <div
       className={`
         ${mobile && "grid grid-cols-2 bg-gray-100 dark:bg-gray-800"}
-        ${border ? "border-2" : mobile ? "border-t-2" : "border-r-2"}
         border-gray-300 px-1
         dark:border-gray-600
         pt-1
