@@ -2,8 +2,8 @@
 
 ![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg).
 ![React](https://img.shields.io/badge/react-v18.2.0-blue)
-![React](https://img.shields.io/badge/tailwindcss-v3.4.3-blue)
-![Strorybook](https://img.shields.io/badge/storybook-v8.0.5-red)
+![React](https://img.shields.io/badge/tailwindcss-v3.4.15-blue)
+![Strorybook](https://img.shields.io/badge/storybook-v8.0.4-red)
 
 プ譜エディターは書籍『予定通り進まないプロジェクトの進め方』（著: 前田考歩、後藤洋平）で
 紹介されているプロジェクト譜（以下、プ譜）を Web ブラウザで編集・表示するためのエディターです。
