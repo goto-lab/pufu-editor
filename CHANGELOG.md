@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.9] - 2024-11-20
+
+- Fix: security update
+
 ## [0.9.8] - 2024-09-03
 
 - Fix: Score border layout bug
