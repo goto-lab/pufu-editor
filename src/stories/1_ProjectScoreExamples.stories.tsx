@@ -135,7 +135,6 @@ export const Example2: Story = {
           }}
           onSave={() => {
             const json = getScoreJson(key2);
-            console.log(json);
             if (json) {
               localStorage.setItem(key2, json);
             }
