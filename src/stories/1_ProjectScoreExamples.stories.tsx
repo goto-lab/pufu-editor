@@ -8,6 +8,7 @@ import {
 import {
   DownloadButton,
   ImportButton,
+  LocalSave,
   ModalDialog,
   exampleData,
 } from "./common";
@@ -107,6 +108,7 @@ export const Example2: Story = {
     const [isOpen, setIsOpen] = React.useState(false);
     const [scoreText, setScoreText] = React.useState("");
     const [error, setError] = React.useState("");
+    const [isLocalSave, setIsLocalSave] = React.useState(false);
     return (
       <>
         <DownloadButton scoreKey={key2} kind="json" />
@@ -118,6 +120,25 @@ export const Example2: Story = {
             setScoreText(json!);
             setIsOpen(true);
             setError("");
+          }}
+        />
+        <LocalSave
+          checked={isLocalSave}
+          onClick={(status: boolean) => {
+            setIsLocalSave(status);
+          }}
+          onLoad={() => {
+            const json = localStorage.getItem(key2);
+            if (json) {
+              setScore(key2, json);
+            }
+          }}
+          onSave={() => {
+            const json = getScoreJson(key2);
+            console.log(json);
+            if (json) {
+              localStorage.setItem(key2, json);
+            }
           }}
         />
         <p className="ml-8">ID: {key2}</p>

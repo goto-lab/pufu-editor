@@ -115,6 +115,88 @@ export const ImportButton = ({ onClick }: ImportButtonProps) => {
   );
 };
 
+export type LocalSaveProps = {
+  checked: boolean;
+  onClick: (checked: boolean) => void;
+  onLoad: () => void;
+  onSave: () => void;
+};
+export const LocalSave = ({
+  checked,
+  onClick,
+  onLoad,
+  onSave,
+}: LocalSaveProps) => {
+  const [saving, setSaving] = React.useState(false);
+  const handleCheckboxChange = (event) => {
+    onClick(event.target.checked);
+  };
+  const handleSave = () => {
+    setSaving(true);
+    onSave();
+    setTimeout(() => {
+      setSaving(false);
+    }, 500);
+  };
+  return (
+    <div>
+      <div className="inline-flex content-center items-center">
+        <button
+          style={{
+            margin: "10px 5px 10px 10px",
+            padding: "4px 8px",
+            color: "#fff",
+            backgroundColor: checked ? "#168dff" : "#aaa",
+            borderRadius: "6px",
+          }}
+          onClick={onLoad}
+        >
+          Load
+        </button>
+        <button
+          style={{
+            margin: "10px",
+            padding: "4px 8px",
+            color: "#fff",
+            backgroundColor: checked ? "#168dff" : "#aaa",
+            borderRadius: "6px",
+          }}
+          onClick={handleSave}
+        >
+          {saving ? (
+            <div className="flex justify-center p-1" aria-label="saving">
+              <div className="animate-spin h-4 w-4 border-4 border-blue-300 rounded-full border-t-transparent"></div>
+            </div>
+          ) : (
+            "Save"
+          )}
+        </button>
+        <label className="flex content-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={checked}
+            onChange={handleCheckboxChange}
+          />
+          <div
+            className="
+            relative w-11 h-6 bg-gray-200
+            peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800
+            rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full
+            peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
+            after:start-[2px] after:bg-white after:border-gray-300 after:border
+            after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600
+          "
+          ></div>
+          <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+            Local save
+          </span>
+        </label>
+      </div>
+    </div>
+  );
+};
+
 export const exampleData: ProjectScoreModel = {
   winCondition: {
     uuid: "er2ugQkdnw5WY2ceSGqVNV",
