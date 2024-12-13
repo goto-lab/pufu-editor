@@ -132,11 +132,13 @@ export const LocalSave = ({
     onClick(event.target.checked);
   };
   const handleSave = () => {
-    setSaving(true);
-    onSave();
-    setTimeout(() => {
-      setSaving(false);
-    }, 500);
+    if (checked) {
+      setSaving(true);
+      onSave();
+      setTimeout(() => {
+        setSaving(false);
+      }, 500);
+    }
   };
   return (
     <div>
@@ -164,7 +166,7 @@ export const LocalSave = ({
           onClick={handleSave}
         >
           {saving ? (
-            <div className="flex justify-center p-1" aria-label="saving">
+            <div className="flex justify-center py-1 px-2" aria-label="saving">
               <div className="animate-spin h-4 w-4 border-4 border-blue-300 rounded-full border-t-transparent"></div>
             </div>
           ) : (
