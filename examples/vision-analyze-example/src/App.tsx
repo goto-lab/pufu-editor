@@ -1,9 +1,10 @@
 import { ChangeEvent, useState } from "react";
-import { ProjectScore, setScore } from "@goto-lab/pufu-editor";
+import { downloadScore, ProjectScore, setScore } from "@goto-lab/pufu-editor";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File>();
   const [response, setResponse] = useState(null);
+  const [analyzed, setAnalyzed] = useState(false);
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
   const convertToBase64 = (file: File) => {
@@ -30,6 +31,7 @@ function App() {
       alert("画像ファイルを選択してください。");
       return;
     }
+    setAnalyzed(true);
     const base64Image = await convertToBase64(selectedFile);
     try {
       // ChatGPTに画像処理リクエストを送信
@@ -237,6 +239,7 @@ function App() {
           .replace("```json", "")
           .replace("```", "")
       );
+      setAnalyzed(false);
     } catch (error) {
       console.error("エラー:", error);
     }
@@ -249,7 +252,18 @@ function App() {
         プ譜の画像を選択して、送信をクリックしてください。
       </p>
       <input type="file" accept="image/*" onChange={handleFileChange} />
-      <button onClick={handleSubmit} style={{ marginLeft: "10px" }}>
+      <button
+        style={{
+          margin: "10px",
+          padding: "4px 8px",
+          color: "#fff",
+          backgroundColor: analyzed ? "#bbb" : "#168dff",
+          borderRadius: "6px",
+          marginLeft: "10px",
+        }}
+        disabled={analyzed}
+        onClick={handleSubmit}
+      >
         送信
       </button>
       <p style={{ marginTop: "20px" }}>※解析に1~2分かかります。</p>
@@ -259,6 +273,20 @@ function App() {
       </p>
 
       <div style={{ marginTop: "20px" }}>
+        <button
+          style={{
+            margin: "10px",
+            padding: "4px 8px",
+            color: "#fff",
+            backgroundColor: "#168dff",
+            borderRadius: "6px",
+          }}
+          onClick={() => {
+            downloadScore("score1", "json");
+          }}
+        >
+          Download json
+        </button>
         <h2>結果:</h2>
         <ProjectScore uniqueKey="score1" />
         <p>ログ:</p>
