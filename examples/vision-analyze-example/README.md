@@ -1,11 +1,10 @@
-# プ譜エディタ Example (First intall)
+# プ譜エディタ Example (vision-analyze-example)
 
 ## インストール
 
 ```
-npm create vite@latest first-intall -- --template react-ts
+cd pufu-editor/examples/vision-analyze-example
 npm install
-npm install @goto-lab/pufu-editor
 ```
 
 ## OpenAI APIキーの設定
