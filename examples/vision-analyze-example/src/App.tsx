@@ -3,15 +3,21 @@ import { downloadScore, ProjectScore, setScore } from "@goto-lab/pufu-editor";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File>();
+  const [base64ImageUrl, setBase64ImageUrl] = useState("");
   const [response, setResponse] = useState(null);
   const [analyzed, setAnalyzed] = useState(false);
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
-  const convertToBase64 = (file: File) => {
+  const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        resolve(reader.result);
+        const result = reader.result;
+        if (result) {
+          resolve(result as string);
+        } else {
+          reject(result);
+        }
       };
       reader.onerror = () => {
         reject(new Error("Failed to read the file."));
@@ -20,9 +26,11 @@ function App() {
     });
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target?.files !== null) {
       setSelectedFile(event.target.files[0]);
+      const base64Image = await convertToBase64(event.target.files[0]);
+      setBase64ImageUrl(base64Image);
     }
   };
 
@@ -32,7 +40,6 @@ function App() {
       return;
     }
     setAnalyzed(true);
-    const base64Image = await convertToBase64(selectedFile);
     try {
       // ChatGPTに画像処理リクエストを送信
       const chatGPTResponse = await fetch(
@@ -222,7 +229,7 @@ function App() {
                   },
                   {
                     type: "image_url",
-                    image_url: { url: base64Image },
+                    image_url: { url: base64ImageUrl },
                   },
                 ],
               },
@@ -241,7 +248,9 @@ function App() {
       );
       setAnalyzed(false);
     } catch (error) {
+      setAnalyzed(false);
       console.error("エラー:", error);
+      alert("エラー:" + (error as Error).message);
     }
   };
 
@@ -266,6 +275,7 @@ function App() {
       >
         送信
       </button>
+      <img src={base64ImageUrl} style={{ width: "200px" }} />
       <p style={{ marginTop: "20px" }}>※解析に1~2分かかります。</p>
       <p>※解析ではOpenAIのAPIリクエスト料金が発生します。</p>
       <p>
