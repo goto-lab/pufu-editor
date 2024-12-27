@@ -1,6 +1,9 @@
-# プ譜エディタ検索 Example (Amplify Pinecone)
+# プ譜エディタ検索 Example (Amplify + Pinecone)
 
-注意: OpenAIのAPIを利用するためAPI利用料が発生します。
+注意事項
+
+- OpenAIのAPIを利用するためAPI利用料が発生します。
+- Pinecone Localにロードされたレコードは、Pinecone Localが停止するとレコードは削除されます。
 
 ## パッケージインストール
 
@@ -69,7 +72,7 @@ ghcr.io/pinecone-io/pinecone-index:latest
 別ターミナルで下記を実行
 
 ```
-node --env-file=.env src/api.mjs
+node --env-file=.env src/server.mjs
 ```
 
 ## 起動
