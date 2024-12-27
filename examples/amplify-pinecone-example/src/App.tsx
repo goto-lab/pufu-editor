@@ -11,6 +11,7 @@ import {
   getScoreJson,
   ProjectScoreModel,
   setScore as setScoreByKey,
+  EightElementsModel,
 } from "@goto-lab/pufu-editor";
 import "./index.css";
 import { ImportButton, ModalDialog } from "./common";
@@ -217,7 +218,11 @@ function App() {
   const search = async () => {
     const res = await fetch(pineconeProxyUrl + "/search?text=" + searchText);
     const data = await res.json();
-    setSearchResults(data as unknown as SearchResult[]);
+    if (Array.isArray(data)) {
+      setSearchResults(data as unknown as SearchResult[]);
+    } else {
+      alert("Search failed.");
+    }
   };
 
   const kindMap = (kind: string) => {
