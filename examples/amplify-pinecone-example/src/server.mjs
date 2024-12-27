@@ -31,6 +31,7 @@ const getIndex = async () => {
 };
 
 const getEmbedding = async (input) => {
+  console.log("Request getEmbedding");
   const embedding = await openai.embeddings.create({
     model: "text-embedding-3-small",
     input,
@@ -172,8 +173,17 @@ app.post("/upsert-bulk", async (req, res) => {
 });
 
 app.get("/search", async (req, res) => {
+  const getVectorByQuery = async (query) => {
+    if (query.text) {
+      return await getEmbedding(req.query.text);
+    } else {
+      const index = await getIndex();
+      const result = await index.namespace("ns1").fetch([req.query.id]);
+      return result.records[req.query.id].values;
+    }
+  };
   try {
-    const vector = await getEmbedding(req.query.text);
+    const vector = await getVectorByQuery(req.query);
     const index = await getIndex();
     const queryResponse = await index.namespace("ns1").query({
       vector,

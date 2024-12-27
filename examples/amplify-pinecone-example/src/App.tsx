@@ -31,6 +31,11 @@ interface SearchResult {
     text: string;
   };
 }
+interface SearchResultByItem {
+  text: string;
+  kind: string;
+  records: SearchResult[];
+}
 
 function App() {
   const [projects, setProjects] = useState<Array<Schema["Project"]["type"]>>(
@@ -42,6 +47,9 @@ function App() {
   const [commentMode, setCommentMode] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResultByItems, setSearchResultByItems] = useState<
+    SearchResultByItem[]
+  >([]);
   const pineconeProxyUrl = import.meta.env.VITE_PINECONE_PROXY_URL;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -192,6 +200,7 @@ function App() {
     setProjectTitle(projectTitle);
     const score = await getScore(projectId);
     setScore(score);
+    searchByScore(score);
   };
 
   const saveScore = async () => {
@@ -223,6 +232,95 @@ function App() {
     } else {
       alert("Search failed.");
     }
+  };
+
+  const searchByScore = async (score: Schema["Score"]["type"]) => {
+    const localSearch = async (id: string) => {
+      const res = await fetch(pineconeProxyUrl + "/search?id=" + id);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        return data as unknown as SearchResult[];
+      } else {
+        return [];
+      }
+    };
+    const results = [];
+    if (score.winCondition.text) {
+      results.push({
+        text: score.winCondition.text,
+        kind: "winCondition",
+        records: (await localSearch(score.id + "-" + score.winCondition.uuid))
+          .filter(
+            (r) =>
+              r.id !== score.id + "-" + score.winCondition.uuid &&
+              r.score > 0.35
+          )
+          .slice(0, 5),
+      });
+    }
+    if (score.gainingGoal.text) {
+      results.push({
+        text: score.gainingGoal.text,
+        kind: "gainingGoal",
+        records: (await localSearch(score.id + "-" + score.gainingGoal.uuid))
+          .filter(
+            (r) =>
+              r.id !== score.id + "-" + score.gainingGoal.uuid && r.score > 0.35
+          )
+          .slice(0, 5),
+      });
+    }
+    for (const purpose of score.purposes ?? []) {
+      if (purpose?.text) {
+        results.push({
+          text: purpose?.text,
+          kind: "purpose",
+          records: (await localSearch(score.id + "-" + purpose.uuid))
+            .filter(
+              (r) => r.id !== score.id + "-" + purpose.uuid && r.score > 0.35
+            )
+            .slice(0, 5),
+        });
+      }
+      for (const measure of purpose?.measures ?? []) {
+        if (measure?.text) {
+          results.push({
+            text: measure?.text,
+            kind: "measure",
+            records: (await localSearch(score.id + "-" + measure.uuid))
+              .filter(
+                (r) => r.id !== score.id + "-" + measure.uuid && r.score > 0.35
+              )
+              .slice(0, 5),
+          });
+        }
+      }
+    }
+    for (const key of [
+      "people",
+      "money",
+      "time",
+      "quality",
+      "businessScheme",
+      "environment",
+      "rival",
+      "foreignEnemy",
+    ]) {
+      if (score.elements[key as keyof EightElementsModel]) {
+        const element = score.elements[key as keyof EightElementsModel];
+        if (element?.text) {
+          results.push({
+            text: element?.text,
+            kind: "elements-" + key,
+            records: (await localSearch(score.id + "-" + element.uuid)).filter(
+              (r) => r.id !== score.id + "-" + element.uuid && r.score > 4
+            ),
+          });
+        }
+      }
+    }
+    console.log(results);
+    setSearchResultByItems(results as unknown as SearchResultByItem[]);
   };
 
   const kindMap = (kind: string) => {
@@ -439,6 +537,56 @@ function App() {
               initScore={score as ProjectScoreModel}
               feedback={commentMode}
             />
+          </div>
+          <div className="my-4">
+            <h2>関連項目</h2>
+            {searchResultByItems
+              .filter((resultItem) => resultItem.records.length > 0)
+              .map((resultItem) => {
+                return (
+                  <div>
+                    <div className="text-gray-600">
+                      &lt;{kindMap(resultItem.kind)}&gt; {resultItem.text}
+                    </div>
+                    <table className="my-4 w-100 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-6">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                          <th className="px-6 py-3">Project Title</th>
+                          <th className="px-6 py-3">Score</th>
+                          <th className="px-6 py-3">Kind</th>
+                          <th className="px-6 py-3">Text</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        {resultItem.records.map((result) => (
+                          <tr key={result.id}>
+                            <td
+                              className="px-6 py-3 text-blue-600 hover:cursor-pointer"
+                              onClick={() =>
+                                loadScore(
+                                  result.metadata.projectId,
+                                  result.metadata.projectTitle
+                                )
+                              }
+                            >
+                              {result.metadata.projectTitle}
+                            </td>
+                            <td className="px-6 py-3">
+                              {result.score.toFixed(2)}
+                            </td>
+                            <td className="px-6 py-3">
+                              {kindMap(result.metadata.kind)}
+                            </td>
+                            <td className="px-6 py-3">
+                              {result.metadata.text}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
           </div>
         </main>
       )}
