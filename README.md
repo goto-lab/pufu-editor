@@ -102,6 +102,18 @@ download("sample1", "png");
 「キックプ譜」及び「プ譜エディタ」は、「予定通り進まないプロジェクトの進め方」の共著者である前田氏と、開発者である山下氏の両名と一緒に進めている取り組みです。
 紛争や誤用、悪用等の防止のため、プ譜は株式会社ゴトーラボにて商標登録しております。利用者は、プ譜エディターを利用した場合、本項目の内容に同意したものとみなします。
 
+## Examples
+
+- [first-install-example](https://github.com/goto-lab/pufu-editor/tree/main/examples/first-install-example)
+  - プ譜エディターのシンプルなインストール例
+- [amplify-gen2-example](https://github.com/goto-lab/pufu-editor/tree/main/examples/amplify-gen2-example)
+  - [AWS Amplify Gen2](https://docs.amplify.aws/)を利用してAWS上にデータを保存、読み込みを行う例
+- [vision-analyze-example](https://github.com/goto-lab/pufu-editor/tree/main/examples/vision-analyze-example)
+  - [OpenAI API](https://openai.com/index/openai-api/)を利用してプ譜の画像を解析し、プ譜のデータを抽出する例
+- [amplify-pinecone-example](https://github.com/goto-lab/pufu-editor/tree/main/examples/amplify-pinecone-example)
+  - ベクトルデータベースの[pinecone](https://www.pinecone.io/)を利用してプ譜の検索及び異なるプ譜の要素間の類似度を算出する例
+  - amplify-gen2-exampleの拡張のためプ譜はAWS上に保存
+
 ## 活動履歴
 
 - [Open Source Conference 2024 Kyoto](https://event.ospn.jp/osc2024-kyoto/) (展示)
