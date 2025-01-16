@@ -109,6 +109,7 @@ export const Example2: Story = {
     const [scoreText, setScoreText] = React.useState("");
     const [error, setError] = React.useState("");
     const [isLocalSave, setIsLocalSave] = React.useState(false);
+    const [memo, setMemo] = React.useState("");
     return (
       <>
         <DownloadButton scoreKey={key2} kind="json" />
@@ -132,16 +133,34 @@ export const Example2: Story = {
             if (json) {
               setScore(key2, json);
             }
+            const localStorageMemo = localStorage.getItem(`${key2}-memo`);
+            if (localStorageMemo) {
+              setMemo(localStorageMemo);
+            }
           }}
           onSave={() => {
             const json = getScoreJson(key2);
             if (json) {
               localStorage.setItem(key2, json);
             }
+            localStorage.setItem(`${key2}-memo`, memo);
           }}
         />
         <p className="ml-8">ID: {key2}</p>
         <meta.component {...args}></meta.component>
+        <div className="p-2">
+          <textarea
+            className="
+              block p-2.5 w-full text-sm text-gray-900 bg-gray-50
+              rounded-lg border border-gray-300
+              focus:outline-none focus:ring-blue-300 focus:border-blue-300
+            "
+            rows={4}
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            placeholder="メモを入力"
+          ></textarea>
+        </div>
         <ModalDialog
           open={isOpen}
           text={scoreText}
