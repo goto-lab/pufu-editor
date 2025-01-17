@@ -72,7 +72,7 @@ ghcr.io/pinecone-io/pinecone-index:latest
 別ターミナルで下記を実行
 
 ```
-node --env-file=.env src/server.mjs
+npm run server
 ```
 
 ## 起動
