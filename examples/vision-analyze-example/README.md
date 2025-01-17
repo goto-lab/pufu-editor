@@ -12,7 +12,15 @@ npm install
 .env-templateを.envにリネームしOpenAIのAPIキーを記載する。
 
 ```
-VITE_OPENAI_API_KEY=<OpenAI APIキー>
+OPENAI_API_KEY=<OpenAI APIキー>
+```
+
+## OpenAIアクセス用のプロキシサーバー起動
+
+別ターミナルで下記を実行
+
+```
+npm run server
 ```
 
 ## 起動
