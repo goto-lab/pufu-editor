@@ -246,9 +246,10 @@ const chatCompletions = async (url) => {
       }
     );
     const data = await chatGPTResponse.json();
+    console.log("Success total_tokens:", data.usage.total_tokens);
     return data;
   } catch (error) {
-    console.error("エラー:", error);
+    console.error("Error:", error);
   }
 };
 
