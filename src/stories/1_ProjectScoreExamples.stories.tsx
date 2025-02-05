@@ -1,5 +1,6 @@
 import React from "react";
 import { StoryObj, Meta } from "@storybook/react";
+import TextareaAutosize from "react-textarea-autosize";
 import {
   ProjectScore,
   getScoreJson,
@@ -149,17 +150,17 @@ export const Example2: Story = {
         <p className="ml-8">ID: {key2}</p>
         <meta.component {...args}></meta.component>
         <div className="p-2">
-          <textarea
+          <TextareaAutosize
             className="
               block p-2.5 w-full text-sm text-gray-900 bg-gray-50
               rounded-lg border border-gray-300
               focus:outline-none focus:ring-blue-300 focus:border-blue-300
             "
-            rows={4}
+            minRows={2}
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
             placeholder="メモを入力"
-          ></textarea>
+          ></TextareaAutosize>
         </div>
         <ModalDialog
           open={isOpen}
