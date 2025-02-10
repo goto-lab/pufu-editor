@@ -73,7 +73,7 @@ export const ModalDialog = (props: ModalProps) => {
 
 export type DownloadButtonProps = {
   scoreKey: string;
-  kind: "json" | "png" | "svg";
+  kind: "json" | "markdown" | "png" | "svg";
 };
 
 export const DownloadButton = ({ scoreKey, kind }: DownloadButtonProps) => {
