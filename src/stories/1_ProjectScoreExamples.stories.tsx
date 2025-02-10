@@ -61,6 +61,7 @@ export const Example1: Story = {
     return (
       <>
         <DownloadButton scoreKey={key1} kind="json" />
+        <DownloadButton scoreKey={key1} kind="markdown" />
         <DownloadButton scoreKey={key1} kind="png" />
         <DownloadButton scoreKey={key1} kind="svg" />
         <ImportButton
@@ -114,6 +115,7 @@ export const Example2: Story = {
     return (
       <>
         <DownloadButton scoreKey={key2} kind="json" />
+        <DownloadButton scoreKey={key2} kind="markdown" />
         <DownloadButton scoreKey={key2} kind="png" />
         <DownloadButton scoreKey={key2} kind="svg" />
         <ImportButton

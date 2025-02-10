@@ -438,9 +438,130 @@ export const getScoreJson = (key: string) => {
   }
 };
 
+export const getScoreMarkdown = (key: string) => {
+  const replaceNL = (prefix: string, text: string) => {
+    return `${prefix}${text.replaceAll(/\n/g, "<br>")}\n`;
+  };
+  let markdown = "";
+  if (state && key in state.scores) {
+    const score = state.scores[key];
+    markdown += replaceNL("- 獲得目標: ", score.gainingGoal.text);
+    if (score.gainingGoal.comment.text) {
+      markdown += replaceNL(
+        "  - 獲得目標のコメント: ",
+        score.gainingGoal.comment.text
+      );
+    }
+    markdown += replaceNL("- 勝利目標: ", score.winCondition.text);
+    if (score.winCondition.comment.text) {
+      markdown += replaceNL(
+        "  - 勝利目標のコメント: ",
+        score.winCondition.comment.text
+      );
+    }
+    if (score.purposes.length > 0) {
+      markdown += score.purposes
+        .map((purpose, purposeIndex) => {
+          let purposeText = replaceNL(
+            `  - 中間目的${purposeIndex + 1}: `,
+            purpose.text
+          );
+          if (purpose.comment.text) {
+            purposeText += replaceNL(
+              `    - 中間目的${purposeIndex + 1}のコメント: `,
+              purpose.comment.text
+            );
+          }
+          if (purpose.measures.length > 0) {
+            purposeText += purpose.measures
+              .map((measure, measureIndex) => {
+                let measureText = replaceNL(
+                  `    - 施策${purposeIndex + 1}-${measureIndex + 1}: `,
+                  measure.text
+                );
+                if (measure.comment.text) {
+                  measureText += replaceNL(
+                    `      - 施策${purposeIndex + 1}-${measureIndex + 1}のコメント: `,
+                    measure.comment.text
+                  );
+                }
+                return measureText;
+              })
+              .join("");
+          }
+          return purposeText;
+        })
+        .join("");
+    }
+    markdown += `- 廟算八要素\n`;
+    markdown += replaceNL("  - ひと: ", score.elements.people.text);
+    if (score.elements.people.comment.text) {
+      markdown += replaceNL(
+        "    - ひとのコメント: ",
+        score.elements.people.comment.text
+      );
+    }
+    markdown += replaceNL("  - お金: ", score.elements.money.text);
+    if (score.elements.money.comment.text) {
+      markdown += replaceNL(
+        "    - お金のコメント: ",
+        score.elements.money.comment.text
+      );
+    }
+    markdown += replaceNL("  - 時間: ", score.elements.time.text);
+    if (score.elements.time.comment.text) {
+      markdown += replaceNL(
+        "    - 時間のコメント: ",
+        score.elements.time.comment.text
+      );
+    }
+    markdown += replaceNL("  - クオリティ: ", score.elements.quality.text);
+    if (score.elements.quality.comment.text) {
+      markdown += replaceNL(
+        "    - クオリティのコメント: ",
+        score.elements.quality.comment.text
+      );
+    }
+    markdown += replaceNL(
+      "  - 商流 / 座組: ",
+      score.elements.businessScheme.text
+    );
+    if (score.elements.businessScheme.comment.text) {
+      markdown += replaceNL(
+        "    - 商流 / 座組のコメント: ",
+        score.elements.businessScheme.comment.text
+      );
+    }
+    markdown += replaceNL("  - 環境: ", score.elements.environment.text);
+    if (score.elements.environment.comment.text) {
+      markdown += replaceNL(
+        "    - 環境のコメント: ",
+        score.elements.environment.comment.text
+      );
+    }
+    markdown += replaceNL("  - ライバル: ", score.elements.rival.text);
+    if (score.elements.rival.comment.text) {
+      markdown += replaceNL(
+        "    - ライバルのコメント: ",
+        score.elements.rival.comment.text
+      );
+    }
+    markdown += replaceNL("  - 外敵: ", score.elements.foreignEnemy.text);
+    if (score.elements.foreignEnemy.comment.text) {
+      markdown += replaceNL(
+        "    - 外敵のコメント: ",
+        score.elements.foreignEnemy.comment.text
+      );
+    }
+  } else {
+    logger.error(`Not found score. key: ${key}`);
+  }
+  return markdown;
+};
+
 export const downloadScore = (
   key: string,
-  type: "json" | "png" | "svg",
+  type: "json" | "markdown" | "png" | "svg",
   fileName?: string
 ) => {
   if (state && key in state.scores) {
@@ -450,6 +571,14 @@ export const downloadScore = (
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.download = `${fileName ?? key}.json`;
+      link.href = url;
+      link.click();
+    } else if (type === "markdown") {
+      const fileData = getScoreMarkdown(key);
+      const blob = new Blob([fileData], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.download = `${fileName ?? key}.md`;
       link.href = url;
       link.click();
     } else if (type === "png") {
