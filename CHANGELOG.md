@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.10] - 2025-2-10
+
+- Add: Markdown format export
+
 ## [0.9.9] - 2024-11-20
 
 - Fix: security update
