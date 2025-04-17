@@ -1,0 +1,63 @@
+---
+description: プ譜エディター TypeScript/React コードスタイルルール
+globs: 
+alwaysApply: false
+---
+# プ譜エディター TypeScript/React コードスタイルルール
+
+## 基本方針
+
+- コードは明確で読みやすく、メンテナンス性の高いものであること
+- TypeScriptの型安全性を最大限に活用すること
+- Reactのベストプラクティスに従うこと
+- TailwindCSSを使用したスタイリングを行うこと
+
+## 命名規則
+
+- コンポーネント: PascalCase (例: `ProjectScore`)
+- 関数: camelCase (例: `getScoreJson`)
+- 変数: camelCase (例: `scoreData`)
+- インターフェース: 先頭に`I`をつけたPascalCase (例: `IScoreData`)
+- 型: PascalCase (例: `ScoreType`)
+- 定数: UPPER_SNAKE_CASE (例: `DEFAULT_SCORE_WIDTH`)
+
+## ファイル構成
+
+- コンポーネントは`src/components`ディレクトリに配置
+- ユーティリティ関数は`src/lib`ディレクトリに配置
+- テストファイルは`src/tests`ディレクトリに配置
+- Storybookのストーリーは`src/stories`ディレクトリに配置
+- 国際化関連のファイルは`src/i18n`ディレクトリに配置
+
+## コーディングスタイル
+
+- 2スペースのインデント
+- セミコロンは必須
+- 文字列はシングルクォートを使用
+- 型注釈は明示的に記述
+- `any`型の使用は避ける
+- 非同期処理はPromiseまたはasync/awaitを使用
+- コメントは日本語で記述
+
+## Reactコンポーネント
+
+- 関数コンポーネントを使用
+- Hooksを適切に活用
+- `React.FC`タイプの使用は避ける
+- 子コンポーネントへのpropsは明示的に型定義
+- 状態管理にはZustandを使用
+
+## エクスポート
+
+- コンポーネントは名前付きエクスポートを使用
+- ライブラリのエントリーポイントでは必要なものだけをエクスポート
+
+## テスト
+
+- コンポーネントごとにテストを作成
+- Storybookのストーリーを各コンポーネントに作成
+
+## 国際化
+
+- 全てのUI文字列はi18nextを使用して国際化
+- 日本語と英語の両方をサポート 

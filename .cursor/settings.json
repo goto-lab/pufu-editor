@@ -1,0 +1,67 @@
+{
+  "projectName": "プ譜エディター",
+  "linting": {
+    "eslint": {
+      "enabled": true,
+      "autofix": true
+    },
+    "prettier": {
+      "enabled": true,
+      "autofix": true
+    }
+  },
+  "formatting": {
+    "typescript": {
+      "tabSize": 2,
+      "indentSize": 2,
+      "useTabs": false
+    },
+    "javascript": {
+      "tabSize": 2,
+      "indentSize": 2,
+      "useTabs": false
+    },
+    "css": {
+      "tabSize": 2,
+      "indentSize": 2,
+      "useTabs": false
+    },
+    "html": {
+      "tabSize": 2,
+      "indentSize": 2,
+      "useTabs": false
+    },
+    "json": {
+      "tabSize": 2,
+      "indentSize": 2,
+      "useTabs": false
+    }
+  },
+  "autocompletion": {
+    "typescript": {
+      "enabled": true
+    },
+    "javascript": {
+      "enabled": true
+    },
+    "html": {
+      "enabled": true
+    },
+    "css": {
+      "enabled": true
+    }
+  },
+  "filenamePatterns": {
+    "component": "{name}.tsx",
+    "test": "{name}.test.tsx",
+    "stories": "{name}.stories.tsx"
+  },
+  "directories": {
+    "components": "src/components",
+    "lib": "src/lib",
+    "tests": "src/tests",
+    "stories": "src/stories",
+    "i18n": "src/i18n"
+  },
+  "ignorePatterns": ["node_modules", "dist", "storybook-static", "coverage"]
+}
