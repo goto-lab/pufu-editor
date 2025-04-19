@@ -27,7 +27,7 @@
     "storybook-test-coverage": "npm run storybook-test -- --coverage && npm run storybook-coverage-report && npm run storybook-coverage-server",
     "storybook-coverage-report": "npx nyc report --reporter=lcov -t coverage/storybook --report-dir coverage/storybook",
     "storybook-coverage-server": "npx http-server coverage/storybook/lcov-report/",
-    "storybook-build": "storybook build",
+    "storybook-build": "storybook build && node .storybook/update-title.mjs",
     "storybook-server": "npx http-server storybook-static --port 6006 --silent",
     "storybook-test-waiton": "npx wait-on tcp:127.0.0.1:6006 && npm run storybook-test",
     "storybook-build-test": "npx concurrently -k -s first -n \"SB,TEST\" \"npm run storybook-server\" \"npm run storybook-test-waiton\"",
