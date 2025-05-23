@@ -1,0 +1,20 @@
+# npm ignore file
+.github/
+.storybook/
+.vscode/
+.cursor/
+.git/
+examples/
+src/
+coverage/
+.nyc_output/
+.eslintrc.js
+.gitignore
+postcss.config.js
+tailwind.config.js
+tsconfig.json
+*.md
+!README.md
+!LICENSE.md
+!CHANGELOG.md
+storybook-static/

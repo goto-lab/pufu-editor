@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - "v*"
+    paths-ignore:
+      - ".github/copilot-instructions.md"
 jobs:
   publish:
     runs-on: ubuntu-latest
