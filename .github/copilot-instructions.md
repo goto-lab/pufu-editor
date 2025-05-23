@@ -126,12 +126,12 @@ import {
 
 // uniqueKeyを指定してエクスポート
 // json取得
-const json = getJson("sample1");
+const json = getScoreJson("sample1");
 
 // ダウンロード
-download("sample1", "json");
-download("sample1", "svg");
-download("sample1", "png");
+downloadScore("sample1", "json");
+downloadScore("sample1", "svg");
+downloadScore("sample1", "png");
 ```
 
 ### コンポーネントの使い方
