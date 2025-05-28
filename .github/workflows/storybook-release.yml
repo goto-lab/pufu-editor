@@ -8,6 +8,7 @@ on:
       - "CHANGELOG.md"
       - "examples/**"
       - ".github/copilot-instructions.md"
+      - "CLAUDE.md"
 env:
   cache-version: v1
 jobs:
