@@ -43,7 +43,7 @@ npm run install
 
 ### 2. 環境変数の設定
 
-`server/.env`ファイルを作成して以下を設定:
+`.env`ファイルを作成して以下を設定:
 
 ```bash
 # LLMプロバイダー設定 ('openai' または 'gemini')
@@ -66,20 +66,13 @@ PORT=3001
 VITE_API_URL=http://localhost:3001
 ```
 
-### 3. バックエンドサーバーの起動
-
-```bash
-cd server
-npm start
-```
-
-### 4. フロントエンドの起動
+### 3. フロントエンドとバックエンドサーバーの起動
 
 ```bash
 npm run dev
 ```
 
-### 5. VOICEVOX（オプション）
+### 4. VOICEVOX
 
 音声読み上げ機能を使用する場合は、VOICEVOXを起動してください。
 
