@@ -3,8 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
 
-// 環境変数の読み込み - server/ディレクトリの.envファイルを読み込み
-dotenv.config({ path: "./server/.env" });
+// 環境変数の読み込み - .envファイルを読み込み
+dotenv.config({ path: "./.env" });
 
 // デバッグ用ログ
 console.log("=== Environment Variables Debug ===");

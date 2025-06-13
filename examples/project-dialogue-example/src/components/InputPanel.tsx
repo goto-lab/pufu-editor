@@ -27,41 +27,54 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   isSpeaking = false
 }) => {
   const [inputText, setInputText] = useState('');
+  
+  // 音声認識結果を入力欄に反映
+  useEffect(() => {
+    if (voiceTranscript && !isListening) {
+      setInputText(prev => {
+        const prevTrim = prev.trim();
+        const voiceTrim = voiceTranscript.trim();
+        return prevTrim ? `${prevTrim} ${voiceTrim}` : voiceTrim;
+      });
+      // 音声認識結果をクリア
+      if (onClearVoiceTranscript) {
+        onClearVoiceTranscript();
+      }
+    }
+  }, [voiceTranscript, isListening, onClearVoiceTranscript]);
   const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState('default');
   const [showDeviceSelector, setShowDeviceSelector] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const audioDeviceManager = AudioDeviceManager.getInstance();
 
+  // 表示用の値を計算（簡素化）
+  const getDisplayValue = () => {
+    if (isListening && interimTranscript) {
+      // 音声入力中: 入力欄の現在値 + 中間結果
+      return inputText ? `${inputText} ${interimTranscript}` : interimTranscript;
+    }
+    // 通常時: 入力欄の値のみ
+    return inputText;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 手動入力と音声認識結果を組み合わせる
-    const manualText = inputText.trim();
-    const voiceText = voiceTranscript?.trim() || '';
-    let textToSubmit = '';
-    
-    if (manualText && voiceText) {
-      // 両方がある場合は組み合わせる
-      textToSubmit = `${manualText} ${voiceText}`;
-    } else {
-      // どちらか一方がある場合
-      textToSubmit = manualText || voiceText;
-    }
+    const textToSubmit = inputText.trim();
     
     if (textToSubmit && !isProcessing) {
       onSubmit(textToSubmit);
       setInputText('');
-      if (onClearVoiceTranscript) {
-        onClearVoiceTranscript();
-      }
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      // Ctrl+Enterで送信
       e.preventDefault();
-      handleSubmit(e as any);
+      handleSubmit(e as React.FormEvent);
     }
+    // Enterは通常の改行動作（preventDefaultしない）
   };
 
   useEffect(() => {
@@ -91,33 +104,19 @@ export const InputPanel: React.FC<InputPanelProps> = ({
             <textarea
               ref={inputRef}
               rows={3}
-              value={(() => {
-                const manualText = inputText;
-                const voiceText = voiceTranscript || '';
-                const existingText = (() => {
-                  if (manualText && voiceText) {
-                    return `${manualText} ${voiceText}`;
-                  }
-                  return manualText || voiceText;
-                })();
-                
-                // 音声入力中の場合、既存のテキスト + 現在の音声認識結果を表示
-                if (isListening && interimTranscript) {
-                  return existingText ? `${existingText} ${interimTranscript}` : interimTranscript;
-                }
-                
-                return existingText;
-              })()}
+              value={getDisplayValue()}
               onChange={(e) => {
-                setInputText(e.target.value);
-                // テキスト入力時は音声認識結果をクリアしない（音声結果と手動入力を共存）
+                // 音声入力中でない場合のみ入力を受け付ける
+                if (!isListening) {
+                  setInputText(e.target.value);
+                }
               }}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               disabled={isProcessing || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
               placeholder={
                 isListening 
                   ? '音声を聞き取っています...' 
-                  : 'メッセージを入力してください（Enterで送信、Shift+Enterで改行）'
+                  : 'メッセージを入力してください（Ctrl+Enterで送信）'
               }
               className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-none"
             />
@@ -136,7 +135,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
             <button
               type="button"
               onClick={() => setShowDeviceSelector(!showDeviceSelector)}
-              className="px-3 py-3 rounded-lg font-medium transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700"
+              className="px-3 py-2 h-12 rounded-lg font-medium transition-colors bg-gray-200 hover:bg-gray-300 text-gray-700"
               title="マイクを選択"
             >
               ⚙️
@@ -165,7 +164,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
             type="button"
             onClick={onVoiceInput}
             disabled={isProcessing || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
-            className={`px-4 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`px-4 py-2 h-12 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               isListening
                 ? 'bg-red-500 hover:bg-red-600 text-white'
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -177,8 +176,8 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           
           <button
             type="submit"
-            disabled={isProcessing || isListening || (!inputText.trim() && !voiceTranscript?.trim()) || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isProcessing || isListening || !inputText.trim() || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
+            className="px-6 py-2 h-12 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             送信
           </button>

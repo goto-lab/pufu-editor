@@ -5,6 +5,8 @@ export class VoicevoxService {
   private audioContext: AudioContext | null = null;
   private currentSource: AudioBufferSourceNode | null = null;
   private isPlaying: boolean = false;
+  private lastSpeakTime: number = 0;
+  private lastSpeakText: string = '';
 
   private constructor() {}
 
@@ -32,6 +34,15 @@ export class VoicevoxService {
     } = {}
   ): Promise<void> {
     try {
+      // 重複再生防止: 100ms以内に同じテキストの再生要求があった場合はスキップ
+      const now = Date.now();
+      if (text === this.lastSpeakText && now - this.lastSpeakTime < 100) {
+        console.log('[DEBUG] 重複再生をスキップしました:', text.substring(0, 50) + '...');
+        return;
+      }
+      this.lastSpeakTime = now;
+      this.lastSpeakText = text;
+
       console.log('[DEBUG] VoicevoxService.speak開始:', new Date().toISOString(), 'テキスト:', text.substring(0, 50) + '...');
       const startTime = performance.now();
       

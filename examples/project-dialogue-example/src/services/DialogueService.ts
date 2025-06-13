@@ -32,9 +32,9 @@ export class DialogueService {
       id: 2,
       loading: false,
       displayMessage:
-        "あなたが取り組まれてたプロジェクトについてお伺いし、プ譜を作成します。 6つの質問にお答えください。",
+        "あなたが取り組まれてたプロジェクトについてお伺いし、プ譜を作成します。 7つの質問にお答えください。",
       voiceMessage:
-        "あなたが取り組まれてたプロジェクトについてお伺いし、プ譜を作成します。 6つの質問にお答えください。",
+        "あなたが取り組まれてたプロジェクトについてお伺いし、プ譜を作成します。 7つの質問にお答えください。",
       nextId: 3,
       type: "notice",
     },
@@ -42,7 +42,7 @@ export class DialogueService {
       id: 3,
       loading: true,
       displayMessage:
-        "**1. プロジェクトの出発点**\n - どのようなプロジェクトの内容\n - プロジェクトに取り組もうとしたきっかけや思い \n- 解決しようとした課題",
+        "**1. プロジェクトの出発点**\n - プロジェクトの内容\n - プロジェクトに取り組もうとしたきっかけや思い \n - 解決しようとした課題",
       voiceMessage:
         "1. プロジェクトの出発点 どのようなプロジェクトを始めましたか？プロジェクトに取り組もうとしたきっかけや背景となる思い、解決しようとした課題について教えてください",
       nextId: 4,
@@ -52,9 +52,9 @@ export class DialogueService {
       id: 4,
       loading: true,
       displayMessage:
-        "**2. 仮説と取り組みの方向性**\n - 当初の仮説や方向性\n - 仮説や方向性を選んだ理由\n - 仮説は途中で変化と出来事",
+        "**2. 仮説と取り組みの方向性**\n - 当初の仮説や方向性\n - 仮説や方向性を選んだ理由\n - 仮説の変化と出来事",
       voiceMessage:
-        "2. 仮説と取り組みの方向性 最初に「こうすればうまく進められるのでは？」といった仮説や方向性はありますか？\n・なぜその仮説や方向性を選んびましたか？また仮説は途中で変化しましたか？それはどのような出来事がきっかけでしたか？",
+        "2. 仮説と取り組みの方向性 最初に「こうすればうまく進められるのでは？」といった仮説や方向性はありますか？なぜその仮説や方向性を選んびましたか？また仮説は途中で変化しましたか？それはどのような出来事がきっかけでしたか？",
       nextId: 5,
       type: "talk",
     },
@@ -72,7 +72,7 @@ export class DialogueService {
       id: 6,
       loading: true,
       displayMessage:
-        "**4. 観察（起きたこと・気づいたこと）**\n - プロジェクトに取り組んだ結果と反応\n・自分たちにとって意外だったこと\n - うまくいかなかったことから学んだこと",
+        "**4. 観察（起きたこと・気づいたこと）**\n - プロジェクトに取り組んだ結果と反応\n - 自分たちにとって意外だったこと\n - うまくいかなかったことから学んだこと",
       voiceMessage:
         "4. 観察 プロジェクトに取り組んだ結果、どのような反応が返ってきましたか？自分たちにとって「意外だったこと」はありますか？うまくいかなかったことから、何か学んだことはありますか？",
       nextId: 7,
@@ -104,19 +104,23 @@ export class DialogueService {
       id: 10,
       loading: false,
       displayMessage:
-        "生成されたプ譜はいかがでしたか？\n是非、<a href='https://forms.gle/LkjFdN8Kekfzivk2A' target='_blank'>問い合わせフォーム</a>からご意見をお聞かせください。\nまた、以下のようなご相談がある方は、 お問い合わせをお待ちしております。\n・自社用にカスタマイズしたい\n・自社のシステムと連携したい\n・自社の製品やメディアにバンドルしたい",
+        "作成されたプ譜はいかがでしたか？プロジェクトの振り返りに役立てば幸いです。",
       voiceMessage:
-        "生成されたプ譜はいかがでしたか？是非、問い合わせフォームからご意見をお聞かせください。また、自社用にカスタマイズしたい、自社のシステムと連携したい、自社の製品やメディアにバンドルしたいなどのご相談がある方は、お問い合わせをお待ちしております。",
+        "作成されたプ譜はいかがでしたか？プロジェクトの振り返りに役立てば幸いです。",
       nextId: null,
       type: "notice",
     },
   ];
 
-  private constructor() {}
+  private constructor() {
+    // インスタンス作成時にカウンターをリセット
+    this.messageIdCounter = 0;
+  }
 
   static getInstance(): DialogueService {
     if (!DialogueService.instance) {
       DialogueService.instance = new DialogueService();
+      console.log("[DEBUG] DialogueService: 新しいインスタンスを作成");
     }
     return DialogueService.instance;
   }
@@ -126,8 +130,15 @@ export class DialogueService {
     text: string,
     voiceText?: string
   ): DialogueMessage {
+    // タイムスタンプベースのユニークIDを生成
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 9);
+    const id = `msg-${timestamp}-${randomSuffix}`;
+    console.log(
+      `[DEBUG] generateMessage: id=${id}, speaker=${speaker}, text=${text.substring(0, 50)}...`
+    );
     return {
-      id: `msg-${++this.messageIdCounter}`,
+      id,
       speaker,
       text,
       voiceText, // 音声読み上げ用テキスト
@@ -207,6 +218,7 @@ export class DialogueService {
             response: aiResponse,
             voiceText: this.stripMarkdown(aiResponse), // AI生成の場合はマークダウン除去
             nextPhase: this.currentStepId === 8 ? "summary" : "basicInfo",
+            shouldGenerate: false,
             currentStepType: nextStep.type,
           };
         } else if (nextStep.type === "talk") {
@@ -215,6 +227,7 @@ export class DialogueService {
             response: nextStep.displayMessage || "",
             voiceText: nextStep.voiceMessage || "",
             nextPhase: this.getPhaseFromStep(nextStep.type),
+            shouldGenerate: false,
             currentStepType: nextStep.type,
           };
         } else {
@@ -223,6 +236,7 @@ export class DialogueService {
             response: nextStep.displayMessage || "",
             voiceText: nextStep.voiceMessage || "",
             nextPhase: this.getPhaseFromStep(nextStep.type),
+            shouldGenerate: false,
             currentStepType: nextStep.type,
           };
         }
@@ -242,6 +256,7 @@ export class DialogueService {
     response: string;
     voiceText?: string;
     nextPhase: DialoguePhase;
+    shouldGenerate?: boolean;
     currentStepType?: string;
   }> {
     const currentStep = this.getCurrentStep();
@@ -251,6 +266,7 @@ export class DialogueService {
         response: "エラーが発生しました。",
         voiceText: undefined,
         nextPhase: "complete",
+        shouldGenerate: false,
         currentStepType: "notice",
       };
     }
@@ -267,6 +283,7 @@ export class DialogueService {
             response: aiResponse,
             voiceText: this.stripMarkdown(aiResponse),
             nextPhase: this.getPhaseFromStep(nextStep.type),
+            shouldGenerate: false,
             currentStepType: nextStep.type,
           };
         } else {
@@ -274,6 +291,7 @@ export class DialogueService {
             response: nextStep.displayMessage || "",
             voiceText: nextStep.voiceMessage || "",
             nextPhase: this.getPhaseFromStep(nextStep.type),
+            shouldGenerate: nextStep.type === "generate",
             currentStepType: nextStep.type,
           };
         }
@@ -284,6 +302,7 @@ export class DialogueService {
       response: "ありがとうございました。",
       voiceText: undefined,
       nextPhase: "complete",
+      shouldGenerate: false,
       currentStepType: "notice",
     };
   }

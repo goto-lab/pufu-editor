@@ -5,6 +5,7 @@
   "description": "プロジェクト振り返りを対話形式で行うサンプルアプリケーション",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"vite\"",
+    "install": "npm install && cd server && npm install && cd ..",
     "server": "node server/server.js",
     "build": "tsc && vite build",
     "preview": "vite preview"
