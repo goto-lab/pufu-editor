@@ -5,17 +5,19 @@
   "description": "プロジェクト振り返りを対話形式で行うサンプルアプリケーション",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"vite\"",
-    "server": "node server/app.js",
+    "server": "node server/server.js",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@goto-lab/pufu-editor": "^0.9.5",
+    "@tailwindcss/typography": "^0.5.16",
     "axios": "^1.7.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^10.1.0",
     "short-uuid": "^5.2.0"
   },
   "devDependencies": {

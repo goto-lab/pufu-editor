@@ -2,6 +2,7 @@ export interface DialogueMessage {
   id: string;
   speaker: 'system' | 'user';
   text: string;
+  voiceText?: string; // 音声読み上げ用テキスト（マークダウンなし）
   timestamp: Date;
 }
 

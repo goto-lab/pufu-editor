@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ProjectScore, setScore, downloadScore } from '@goto-lab/pufu-editor';
 import { ProjectInfo } from '../types';
 import short from 'short-uuid';
@@ -9,6 +9,9 @@ interface ProjectScoreViewProps {
 }
 
 export const ProjectScoreView: React.FC<ProjectScoreViewProps> = ({ projectInfo, onClose }) => {
+  const [selectedFormat, setSelectedFormat] = useState<'json' | 'svg' | 'png'>('json');
+  const [showFormatSelector, setShowFormatSelector] = useState(false);
+  const selectorRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     // 新しい形式のプ譜データを使用するか、旧形式から変換
     if (projectInfo.scoreData) {
@@ -122,8 +125,30 @@ export const ProjectScoreView: React.FC<ProjectScoreViewProps> = ({ projectInfo,
     }
   }, [projectInfo]);
 
+  // 外クリック時にフォーマット選択を閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectorRef.current && !selectorRef.current.contains(event.target as Node)) {
+        setShowFormatSelector(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleDownload = () => {
-    downloadScore('project-review', `${projectInfo.name}_プ譜.json`);
+    const baseFileName = `${projectInfo.name}_プ譜`;
+    
+    downloadScore('project-review', selectedFormat, baseFileName);
+  };
+
+  const formatLabels = {
+    json: 'JSON',
+    svg: 'SVG画像',
+    png: 'PNG画像'
   };
 
   return (
@@ -134,6 +159,37 @@ export const ProjectScoreView: React.FC<ProjectScoreViewProps> = ({ projectInfo,
             {projectInfo.name} - プロジェクト譜
           </h2>
           <div className="flex gap-3">
+            <div className="relative" ref={selectorRef}>
+              <button
+                onClick={() => setShowFormatSelector(!showFormatSelector)}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+              >
+                {formatLabels[selectedFormat]}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {showFormatSelector && (
+                <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                  {Object.entries(formatLabels).map(([format, label]) => (
+                    <button
+                      key={format}
+                      onClick={() => {
+                        setSelectedFormat(format as 'json' | 'svg' | 'png');
+                        setShowFormatSelector(false);
+                      }}
+                      className={`w-full px-4 py-2 text-left hover:bg-gray-100 first:rounded-t-lg last:rounded-b-lg ${
+                        selectedFormat === format ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
             <button
               onClick={handleDownload}
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"

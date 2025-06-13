@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { DialogueMessage } from '../types';
 
 interface HistoryPanelProps {
@@ -45,7 +46,9 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({ messages }) => {
                   })}
                 </span>
               </div>
-              <p className="text-gray-700 whitespace-pre-wrap">{message.text}</p>
+              <div className="text-gray-700 prose prose-xs max-w-none">
+                <ReactMarkdown>{message.text}</ReactMarkdown>
+              </div>
             </div>
           ))
         )}

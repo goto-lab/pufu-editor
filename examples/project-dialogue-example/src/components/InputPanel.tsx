@@ -4,32 +4,56 @@ import { AudioDeviceManager, AudioDevice } from '../services/AudioDeviceManager'
 interface InputPanelProps {
   onSubmit: (text: string) => void;
   onVoiceInput: () => void;
+  onClearVoiceTranscript?: () => void;
   isProcessing: boolean;
   isListening: boolean;
   interimTranscript?: string;
+  voiceTranscript?: string; // 音声認識結果
   isDisabled?: boolean;
+  allowSpeakingInterruption?: boolean; // 発話中の回答を許可するか
+  isSpeaking?: boolean; // 現在発話中か
 }
 
 export const InputPanel: React.FC<InputPanelProps> = ({
   onSubmit,
   onVoiceInput,
+  onClearVoiceTranscript,
   isProcessing,
   isListening,
   interimTranscript,
-  isDisabled = false
+  voiceTranscript,
+  isDisabled = false,
+  allowSpeakingInterruption = false,
+  isSpeaking = false
 }) => {
   const [inputText, setInputText] = useState('');
   const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState('default');
   const [showDeviceSelector, setShowDeviceSelector] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const audioDeviceManager = AudioDeviceManager.getInstance();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputText.trim() && !isProcessing) {
-      onSubmit(inputText.trim());
+    // 手動入力と音声認識結果を組み合わせる
+    const manualText = inputText.trim();
+    const voiceText = voiceTranscript?.trim() || '';
+    let textToSubmit = '';
+    
+    if (manualText && voiceText) {
+      // 両方がある場合は組み合わせる
+      textToSubmit = `${manualText} ${voiceText}`;
+    } else {
+      // どちらか一方がある場合
+      textToSubmit = manualText || voiceText;
+    }
+    
+    if (textToSubmit && !isProcessing) {
+      onSubmit(textToSubmit);
       setInputText('');
+      if (onClearVoiceTranscript) {
+        onClearVoiceTranscript();
+      }
     }
   };
 
@@ -64,19 +88,38 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
         <div className="flex gap-3">
           <div className="flex-1 relative">
-            <input
+            <textarea
               ref={inputRef}
-              type="text"
-              value={isListening && interimTranscript ? interimTranscript : inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              rows={3}
+              value={(() => {
+                const manualText = inputText;
+                const voiceText = voiceTranscript || '';
+                const existingText = (() => {
+                  if (manualText && voiceText) {
+                    return `${manualText} ${voiceText}`;
+                  }
+                  return manualText || voiceText;
+                })();
+                
+                // 音声入力中の場合、既存のテキスト + 現在の音声認識結果を表示
+                if (isListening && interimTranscript) {
+                  return existingText ? `${existingText} ${interimTranscript}` : interimTranscript;
+                }
+                
+                return existingText;
+              })()}
+              onChange={(e) => {
+                setInputText(e.target.value);
+                // テキスト入力時は音声認識結果をクリアしない（音声結果と手動入力を共存）
+              }}
               onKeyPress={handleKeyPress}
-              disabled={isProcessing || isListening || isDisabled}
+              disabled={isProcessing || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
               placeholder={
                 isListening 
                   ? '音声を聞き取っています...' 
-                  : 'メッセージを入力してください'
+                  : 'メッセージを入力してください（Enterで送信、Shift+Enterで改行）'
               }
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-none"
             />
             {isListening && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -121,7 +164,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           <button
             type="button"
             onClick={onVoiceInput}
-            disabled={isProcessing || isListening || isDisabled}
+            disabled={isProcessing || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
             className={`px-4 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               isListening
                 ? 'bg-red-500 hover:bg-red-600 text-white'
@@ -134,7 +177,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           
           <button
             type="submit"
-            disabled={isProcessing || isListening || !inputText.trim() || isDisabled}
+            disabled={isProcessing || isListening || (!inputText.trim() && !voiceTranscript?.trim()) || (isDisabled && !(allowSpeakingInterruption && isSpeaking))}
             className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             送信

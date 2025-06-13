@@ -3,6 +3,8 @@ import axios from 'axios';
 export class VoicevoxService {
   private static instance: VoicevoxService;
   private audioContext: AudioContext | null = null;
+  private currentSource: AudioBufferSourceNode | null = null;
+  private isPlaying: boolean = false;
 
   private constructor() {}
 
@@ -30,6 +32,9 @@ export class VoicevoxService {
     } = {}
   ): Promise<void> {
     try {
+      console.log('[DEBUG] VoicevoxService.speak開始:', new Date().toISOString(), 'テキスト:', text.substring(0, 50) + '...');
+      const startTime = performance.now();
+      
       const response = await axios.post('/api/synthesize', {
         text,
         speaker: options.speaker || 3, // ずんだもん
@@ -37,6 +42,9 @@ export class VoicevoxService {
         pitchScale: options.pitchScale || 0,
         volumeScale: options.volumeScale || 1,
       });
+      
+      const apiTime = performance.now();
+      console.log('[DEBUG] API応答完了:', (apiTime - startTime).toFixed(2) + 'ms');
 
       const audioData = response.data.audio;
       const audioBuffer = this.base64ToArrayBuffer(audioData);
@@ -48,9 +56,24 @@ export class VoicevoxService {
       source.buffer = decodedAudio;
       source.connect(context.destination);
       
-      return new Promise((resolve) => {
-        source.onended = () => resolve();
-        source.start();
+      // 現在のソースを記録
+      this.currentSource = source;
+      this.isPlaying = true;
+      
+      return new Promise((resolve, reject) => {
+        source.onended = () => {
+          this.isPlaying = false;
+          this.currentSource = null;
+          resolve();
+        };
+        
+        try {
+          source.start();
+        } catch (error) {
+          this.isPlaying = false;
+          this.currentSource = null;
+          reject(error);
+        }
       });
     } catch (error) {
       console.error('音声合成エラー:', error);
@@ -65,6 +88,18 @@ export class VoicevoxService {
       bytes[i] = binaryString.charCodeAt(i);
     }
     return bytes.buffer;
+  }
+
+  stopSpeaking(): void {
+    if (this.currentSource && this.isPlaying) {
+      this.currentSource.stop();
+      this.currentSource = null;
+      this.isPlaying = false;
+    }
+  }
+
+  isCurrentlySpeaking(): boolean {
+    return this.isPlaying;
   }
 
   async checkConnection(): Promise<boolean> {

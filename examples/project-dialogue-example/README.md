@@ -1,49 +1,93 @@
-# プロジェクト振り返り対話システム
+# Project Dialogue Example
 
-プロジェクトの振り返りを対話形式で行い、最終的にプ譜（ProjectScore）を生成するサンプルアプリケーションです。
+音声対話機能付きのプロジェクト振り返りシステムです。OpenAI/Gemini APIとVOICEVOXを使用した音声合成機能を備えています。
 
-## 機能
+## 主な機能
 
-- 🎙️ 音声入力・音声出力（VOICEVOX使用）
-- 💬 対話形式でのプロジェクト振り返り
-- 📊 振り返り結果をプ譜として出力
-- 📝 対話履歴の表示
+### LLM機能
+
+- **OpenAI/Gemini対応**: 環境変数でLLMプロバイダーを選択可能
+- **サーバー経由API**: バックエンドサーバー経由でLLM APIを呼び出し
+- **質問種別対応**: 定型文(talk)と動的生成(question)の質問を区別
+- **プ譜生成**: 対話内容からプロジェクト譜を自動生成
+
+### 音声機能
+
+- **音声読み上げ**: VOICEVOXによる自動音声読み上げ
+- **音声認識**: ブラウザ標準のSpeech Recognition API
+- **発話中断**: notice時に発話を途中で停止可能
+- **発話中回答**: talk/question時は発話中でも回答可能
+
+### UI/UX機能
+
+- **マークダウン表示**: システムメッセージのマークダウン対応
+- **音声テキスト分離**: 表示用テキストと音声読み上げ用テキストを分離
+- **送信ボタン制御**: 音声認識後は送信ボタンで送信
+- **マイク再押下**: 音声認識中の再押下で新しい認識を開始
+- **チャット履歴**: 左側パネルに対話履歴を表示（ユーザー回答は非表示）
+
+### 並行処理
+
+- **LLM生成と音声読み上げ**: プ譜生成時に並行実行
 
 ## セットアップ
 
 ### 1. 依存関係のインストール
 
+フロントエンドの依存関係インストール
+
 ```bash
+npm install
+```
+
+サーバーの依存関係インストール
+
+```bash
+cd server
 npm install
 ```
 
 ### 2. 環境変数の設定
 
-`.env.example`をコピーして`.env`ファイルを作成し、OpenAI APIキーを設定してください：
+`server/.env`ファイルを作成して以下を設定:
 
 ```bash
-cp .env.example .env
+# LLMプロバイダー設定 ('openai' または 'gemini')
+LLM_PROVIDER=openai
+
+# OpenAI API Key
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Gemini API Key
+GEMINI_API_KEY=your-gemini-api-key-here
+
+# サーバーポート（オプション）
+PORT=3001
 ```
 
-`.env`ファイルを編集：
+フロントエンド用に`.env`ファイルを作成:
+
+```bash
+# バックエンドサーバーURL
+VITE_API_URL=http://localhost:3001
 ```
-VITE_OPENAI_API_KEY=your_actual_openai_api_key_here
+
+### 3. バックエンドサーバーの起動
+
+```bash
+cd server
+npm start
 ```
 
-### 3. VOICEVOXの起動
-
-VOICEVOXをダウンロードして起動してください。
-デフォルトでは `http://localhost:50021` で動作することを想定しています。
-
-### 4. アプリケーションの起動
+### 4. フロントエンドの起動
 
 ```bash
 npm run dev
 ```
 
-これにより以下が起動します：
-- Viteの開発サーバー（http://localhost:5173）
-- VOICEVOXプロキシサーバー（http://localhost:3001）
+### 5. VOICEVOX（オプション）
+
+音声読み上げ機能を使用する場合は、VOICEVOXを起動してください。
 
 ## 使い方
 
@@ -65,14 +109,17 @@ npm run dev
 ## 主な機能
 
 ### AI機能
+
 - OpenAI APIを使った動的な質問生成
 - ユーザーの回答からAIによるプ譜自動生成
 
 ### 音声機能
+
 - VOICEVOXによる音声合成（ずんだもん等のキャラクター音声）
 - Web Speech APIによる音声認識（日本語対応）
 
 ### 対話フロー
+
 1. **問い（プロジェクトの出発点）**
 2. **仮説（取り組みの方向性）**
 3. **実験（実際にやってみたこと）**
