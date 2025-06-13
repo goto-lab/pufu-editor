@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音声認識テスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .listening {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        .not-listening {
+            background-color: #4ecdc4;
+            color: white;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>音声認識テスト</h1>
+    
+    <div class="status">
+        <h3>ステータス</h3>
+        <p>認識状態: <span id="recognition-status">停止中</span></p>
+        <p>内部フラグ (isRecognizing): <span id="internal-flag">false</span></p>
+        <p>最終結果: <span id="final-result">-</span></p>
+        <p>中間結果: <span id="interim-result">-</span></p>
+    </div>
+    
+    <button id="start-btn" class="button not-listening">音声認識開始</button>
+    <button id="stop-btn" class="button">強制停止</button>
+    
+    <div id="log" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; max-height: 300px; overflow-y: auto;">
+        <h3>ログ</h3>
+    </div>
+
+    <script>
+        // SpeechRecognitionService のシンプルな実装
+        class TestSpeechRecognition {
+            constructor() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.lang = 'ja-JP';
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = true;
+                    this.recognition.maxAlternatives = 1;
+                }
+                this.isRecognizing = false;
+            }
+
+            async listen() {
+                return new Promise((resolve, reject) => {
+                    if (this.isRecognizing) {
+                        reject(new Error('音声認識は既に実行中です'));
+                        return;
+                    }
+
+                    let finalTranscript = '';
+                    
+                    this.recognition.onstart = () => {
+                        log('onstart: 音声認識開始', 'success');
+                        updateStatus('認識中', true);
+                    };
+
+                    this.recognition.onresult = (event) => {
+                        let interimTranscript = '';
+                        
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            const transcript = event.results[i][0].transcript;
+                            if (event.results[i].isFinal) {
+                                finalTranscript += transcript;
+                                document.getElementById('final-result').textContent = finalTranscript;
+                            } else {
+                                interimTranscript += transcript;
+                                document.getElementById('interim-result').textContent = interimTranscript;
+                            }
+                        }
+                        
+                        if (finalTranscript) {
+                            log(`onresult: 最終結果 "${finalTranscript}"`, 'success');
+                            this.recognition.stop();
+                        }
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        log(`onerror: ${event.error}`, 'error');
+                        this.isRecognizing = false; // エラー時はフラグをリセット
+                        updateStatus('エラー発生', false);
+                        
+                        switch (event.error) {
+                            case 'no-speech':
+                                reject(new Error('音声が検出されませんでした'));
+                                break;
+                            case 'not-allowed':
+                                reject(new Error('マイクの使用が許可されていません'));
+                                break;
+                            case 'aborted':
+                                if (!finalTranscript) {
+                                    reject(new Error('音声認識が中断されました'));
+                                }
+                                break;
+                            default:
+                                reject(new Error(`音声認識エラー: ${event.error}`));
+                        }
+                    };
+
+                    this.recognition.onend = () => {
+                        log('onend: 音声認識終了', 'success');
+                        this.isRecognizing = false;
+                        updateStatus('停止中', false);
+                        
+                        if (finalTranscript) {
+                            resolve(finalTranscript);
+                        } else {
+                            reject(new Error('音声が検出されませんでした'));
+                        }
+                    };
+
+                    try {
+                        this.isRecognizing = true;
+                        updateStatus('開始中...', true);
+                        this.recognition.start();
+                        log('start() メソッドを呼び出しました', 'success');
+                    } catch (error) {
+                        this.isRecognizing = false;
+                        updateStatus('エラー', false);
+                        log(`start() エラー: ${error.message}`, 'error');
+                        reject(error);
+                    }
+                });
+            }
+
+            stop() {
+                if (this.recognition && this.isRecognizing) {
+                    log('stop() メソッドを呼び出しました', 'success');
+                    this.recognition.stop();
+                    this.isRecognizing = false;
+                    updateStatus('停止処理中...', false);
+                } else {
+                    log('stop(): 認識は実行されていません', 'error');
+                }
+            }
+        }
+
+        // グローバル変数
+        const speechRecognition = new TestSpeechRecognition();
+        let isListening = false;
+
+        // ユーティリティ関数
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+            logDiv.innerHTML += `<p class="${className}">[${time}] ${message}</p>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(status, recognizing) {
+            document.getElementById('recognition-status').textContent = status;
+            document.getElementById('internal-flag').textContent = recognizing;
+            
+            const startBtn = document.getElementById('start-btn');
+            if (recognizing) {
+                startBtn.textContent = '認識中...';
+                startBtn.classList.remove('not-listening');
+                startBtn.classList.add('listening');
+            } else {
+                startBtn.textContent = '音声認識開始';
+                startBtn.classList.remove('listening');
+                startBtn.classList.add('not-listening');
+            }
+        }
+
+        // イベントハンドラー
+        document.getElementById('start-btn').addEventListener('click', async () => {
+            if (isListening) {
+                log('既に認識中です', 'error');
+                return;
+            }
+
+            isListening = true;
+            document.getElementById('final-result').textContent = '-';
+            document.getElementById('interim-result').textContent = '-';
+
+            try {
+                log('音声認識を開始します...', 'info');
+                const result = await speechRecognition.listen();
+                log(`認識成功: "${result}"`, 'success');
+                isListening = false;
+            } catch (error) {
+                log(`エラー: ${error.message}`, 'error');
+                isListening = false;
+            }
+        });
+
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            log('強制停止を実行します', 'info');
+            speechRecognition.stop();
+            isListening = false;
+        });
+
+        // 初期化
+        if (!speechRecognition.recognition) {
+            log('音声認識はサポートされていません', 'error');
+            document.getElementById('start-btn').disabled = true;
+        } else {
+            log('音声認識APIが利用可能です', 'success');
+        }
+    </script>
+</body>
+</html>
