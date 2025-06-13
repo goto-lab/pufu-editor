@@ -53,7 +53,8 @@ export const DialogueView: React.FC<DialogueViewProps> = ({
                   <ReactMarkdown>{currentMessage.text}</ReactMarkdown>
                 </div>
                 {currentMessage.speaker === "system" &&
-                  currentStepType === "notice" && (
+                  currentStepType === "notice" &&
+                  !currentMessage.text.includes("ありがとうございました") && (
                     <div className="mt-4 text-right">
                       {onNextClick && (
                         <button

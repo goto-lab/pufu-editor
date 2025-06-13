@@ -169,7 +169,7 @@ function App() {
         setCurrentMessage(systemMessage);
         setMessages((prev) => [...prev, systemMessage]);
 
-        // 音声で読み上げ（既に再生中でない場合のみ）
+        // 音声で読み上げ
         console.log("[DEBUG] 音声読み上げ条件チェック:", {
           voicevoxConnected,
           isSpeaking,
@@ -177,7 +177,13 @@ function App() {
           currentStepType: newStepType
         });
         
-        if (voicevoxConnected && !isSpeaking) {
+        if (voicevoxConnected) {
+          // 既に発話中の場合は停止
+          if (isSpeaking) {
+            console.log("[DEBUG] 既存の音声を停止して新しい音声を開始");
+            voicevoxService.stopSpeaking();
+            setIsSpeaking(false);
+          }
           const voiceTextToSpeak = dialogueService.getVoiceText(systemMessage);
           console.log("[DEBUG] 音声読み上げ開始:", new Date().toISOString());
           setIsSpeaking(true);
@@ -196,30 +202,50 @@ function App() {
                 setShowProjectScore(true);
                 setHasProjectScore(true);
 
-                // プ譜生成後、自動的に次のステップ（11）に進む
-                const { response: nextResponse, voiceText: nextVoiceText } =
-                  await dialogueService.proceedToNext();
-                const finalMessage = dialogueService.generateMessage(
-                  "system",
-                  nextResponse,
-                  nextVoiceText
-                );
-                setCurrentMessage(finalMessage);
-                setMessages((prev) => [...prev, finalMessage]);
-                setCurrentStepType("notice");
-
-                // 最終メッセージの音声読み上げ
-                if (voicevoxConnected) {
-                  const finalVoiceText =
-                    dialogueService.getVoiceText(finalMessage);
-                  setIsSpeaking(true);
-                  try {
-                    await voicevoxService.speak(finalVoiceText);
-                    setIsSpeaking(false);
-                  } catch (error) {
-                    setIsSpeaking(false);
-                    console.error("最終メッセージ音声再生エラー:", error);
+                // プ譜生成後、自動的に次のステップに進む
+                console.log("[DEBUG] プ譜生成完了、次のステップに進む");
+                
+                try {
+                  // 現在のステップIDを手動で更新（generateの次のステップに進む）
+                  const currentStep = dialogueService.getCurrentStep();
+                  if (currentStep && currentStep.nextId) {
+                    dialogueService.setCurrentStepId(currentStep.nextId);
+                    const nextStep = dialogueService.getCurrentStep();
+                    
+                    if (nextStep) {
+                      const finalMessage = dialogueService.generateMessage(
+                        "system",
+                        nextStep.displayMessage || "",
+                        nextStep.voiceMessage || ""
+                      );
+                      setCurrentMessage(finalMessage);
+                      setMessages((prev) => [...prev, finalMessage]);
+                      setCurrentStepType(nextStep.type);
+                      
+                      // 最終メッセージの音声読み上げ
+                      if (voicevoxConnected) {
+                        const finalVoiceText = dialogueService.getVoiceText(finalMessage);
+                        setIsSpeaking(true);
+                        try {
+                          await voicevoxService.speak(finalVoiceText);
+                          setIsSpeaking(false);
+                        } catch (error) {
+                          setIsSpeaking(false);
+                          console.error("最終メッセージ音声再生エラー:", error);
+                        }
+                      }
+                    }
                   }
+                } catch (stepError) {
+                  console.error("ステップ遷移エラー:", stepError);
+                  // ステップ遷移エラーの場合は簡単な完了メッセージを表示
+                  const completionMessage = dialogueService.generateMessage(
+                    "system",
+                    "作成されたプ譜はいかがでしたか？プロジェクトの振り返りに役立てば幸いです。"
+                  );
+                  setCurrentMessage(completionMessage);
+                  setMessages((prev) => [...prev, completionMessage]);
+                  setCurrentStepType("notice");
                 }
               } catch (error) {
                 console.error("プ譜生成エラー:", error);
@@ -236,11 +262,57 @@ function App() {
             console.error("音声再生エラー:", error);
           }
         } else {
-          console.log("[DEBUG] 音声読み上げをスキップ:", {
-            voicevoxConnected,
-            isSpeaking,
-            reason: !voicevoxConnected ? "VOICEVOX未接続" : "既に発話中"
-          });
+          console.log("[DEBUG] VOICEVOX未接続のため音声読み上げをスキップ");
+          
+          // 音声機能が無効でもプ譜生成が必要ならば実行
+          if (shouldGenerate) {
+            console.log("[DEBUG] VOICEVOX未接続時のプ譜生成開始:", new Date().toISOString());
+            try {
+              ProjectAnalyzer.analyzeAndComplete(
+                dialogueService.getProjectInfo()
+              );
+              setShowProjectScore(true);
+              setHasProjectScore(true);
+              console.log("[DEBUG] プ譜生成完了、次のステップに進む");
+              
+              // プ譜生成後、自動的に次のステップに進む
+              try {
+                const currentStep = dialogueService.getCurrentStep();
+                if (currentStep && currentStep.nextId) {
+                  dialogueService.setCurrentStepId(currentStep.nextId);
+                  const nextStep = dialogueService.getCurrentStep();
+                  
+                  if (nextStep) {
+                    const finalMessage = dialogueService.generateMessage(
+                      "system",
+                      nextStep.displayMessage || "",
+                      nextStep.voiceMessage || ""
+                    );
+                    setCurrentMessage(finalMessage);
+                    setMessages((prev) => [...prev, finalMessage]);
+                    setCurrentStepType(nextStep.type);
+                  }
+                }
+              } catch (stepError) {
+                console.error("ステップ遷移エラー:", stepError);
+                const completionMessage = dialogueService.generateMessage(
+                  "system",
+                  "作成されたプ譜はいかがでしたか？プロジェクトの振り返りに役立てば幸いです。"
+                );
+                setCurrentMessage(completionMessage);
+                setMessages((prev) => [...prev, completionMessage]);
+                setCurrentStepType("notice");
+              }
+            } catch (error) {
+              console.error("プ譜生成エラー:", error);
+              const errorMessage = dialogueService.generateMessage(
+                "system",
+                "プ譜の生成中にエラーが発生しました。もう一度お試しください。"
+              );
+              setCurrentMessage(errorMessage);
+              setMessages((prev) => [...prev, errorMessage]);
+            }
+          }
         }
         
         if (shouldGenerate && !voicevoxConnected) {

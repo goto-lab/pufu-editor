@@ -82,7 +82,7 @@ export class DialogueService {
       id: 7,
       loading: true,
       displayMessage:
-        "**5. 意味づけ（学び・変化・価値）**\n - プロジェクトを通じて得たこと\n - 視点や前提の変化\n・自分やチームにとっての意味\n - プロジェクトによる未来の変化",
+        "**5. 意味づけ（学び・変化・価値）**\n - プロジェクトを通じて得たこと\n - 視点や前提の変化\n - 自分やチームにとっての意味\n - プロジェクトによる未来の変化",
       voiceMessage:
         "5. 意味づけ このプロジェクトを通じて、自分たちは何を得ましたか？視点や前提が変わったことはありますか？チームにとっての意味、自分にとっての意味は何でしょうか？このプロジェクトは、どのように未来につながりますか？",
       nextId: 8,
@@ -165,6 +165,10 @@ export class DialogueService {
 
   getCurrentStep(): ScenarioStep | null {
     return this.scenario.find((step) => step.id === this.currentStepId) || null;
+  }
+
+  setCurrentStepId(stepId: number): void {
+    this.currentStepId = stepId;
   }
 
   getUserResponses(): { [stepId: number]: string } {}
