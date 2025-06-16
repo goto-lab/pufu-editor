@@ -597,7 +597,6 @@ function App() {
           isProcessing={isProcessing}
           currentStepType={currentStepType}
           onNextClick={handleNextClick}
-          isSpeaking={isSpeaking}
         />
         <HistoryPanel messages={messages} />
       </div>
@@ -609,9 +608,9 @@ function App() {
         isProcessing={isProcessing}
         isListening={isListening}
         interimTranscript={interimTranscript}
-        isDisabled={currentStepType === "notice"}
+        isDisabled={currentStepType === "notice" || currentStepType === "feedback"}
         allowSpeakingInterruption={
-          currentStepType === "talk" || currentStepType === "question"
+          currentStepType === "talk" || currentStepType === "question" || currentStepType === "feedback"
         }
         isSpeaking={isSpeaking}
         voiceTranscript={voiceTranscript}
