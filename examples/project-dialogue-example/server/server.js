@@ -95,6 +95,36 @@ app.post("/api/generate-project-info", async (req, res) => {
   }
 });
 
+// フィードバック生成エンドポイント
+app.post("/api/generate-feedback", async (req, res) => {
+  console.log("[API] /api/generate-feedback called");
+  console.log("[API] Using LLM provider:", LLM_PROVIDER);
+  try {
+    const { userResponse, stepId } = req.body;
+    console.log(
+      "[API] User response received for feedback generation, stepId:",
+      stepId
+    );
+
+    if (LLM_PROVIDER === "openai") {
+      console.log("[API] Calling OpenAI feedback generation...");
+      const response = await generateFeedbackOpenAI(userResponse, stepId);
+      console.log("[API] OpenAI feedback response received");
+      res.json({ feedback: response });
+    } else if (LLM_PROVIDER === "gemini") {
+      console.log("[API] Calling Gemini feedback generation...");
+      const response = await generateFeedbackGemini(userResponse, stepId);
+      console.log("[API] Gemini feedback response received");
+      res.json({ feedback: response });
+    } else {
+      throw new Error("Invalid LLM provider");
+    }
+  } catch (error) {
+    console.error("Error generating feedback:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // OpenAI関連の関数
 async function generateQuestionOpenAI(userResponses) {
   const context = userResponses.join("\n\n");
@@ -309,6 +339,64 @@ ${context}
   }
 }
 
+// フィードバック生成関数（OpenAI）
+async function generateFeedbackOpenAI(userResponse, stepId) {
+  const questionTopics = {
+    3: "プロジェクトの出発点",
+    5: "仮説と取り組みの方向性",
+    7: "実際の取り組み",
+    9: "観察（起きたこと・気づいたこと）",
+    11: "意味づけ（学び・変化・価値）",
+  };
+
+  const topic = questionTopics[stepId] || "回答";
+
+  const systemPrompt = `
+# 役割について
+あなたはプロジェクトの振り返りをサポートするAIアシスタントです。
+ユーザーの回答に対して、励ましや共感を示しながら、簡潔なフィードバックを提供してください。
+
+# フィードバックの方針
+- ユーザーの経験を肯定的に受け止める
+- 回答内容の中で特に印象的な点を一つピックアップする
+- フィードバックのみで追加の質問はしない
+  - ただし、質問は続くので総括する内容は避ける
+- 2-3文程度の簡潔なフィードバックにする
+`;
+
+  const userPrompt = `
+ユーザーが「${topic}」について以下のように回答しました：
+
+${userResponse}
+
+この回答に対して、励ましや共感を示しながら、簡潔なフィードバックを提供してください。
+`;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      max_tokens: 200,
+      temperature: 0.8,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
 // Gemini関連の関数
 async function generateQuestionGemini(userResponses) {
   const { GoogleGenerativeAI } = await import("@google/generative-ai");
@@ -473,6 +561,43 @@ JSONのみを出力してください。説明文は不要です。
   } else {
     return JSON.parse(content);
   }
+}
+
+// フィードバック生成関数（Gemini）
+async function generateFeedbackGemini(userResponse, stepId) {
+  const { GoogleGenerativeAI } = await import("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+  const questionTopics = {
+    3: "プロジェクトの出発点",
+    5: "仮説と取り組みの方向性",
+    7: "実際の取り組み",
+    9: "観察（起きたこと・気づいたこと）",
+    11: "意味づけ（学び・変化・価値）",
+  };
+
+  const topic = questionTopics[stepId] || "回答";
+
+  const prompt = `
+あなたはプロジェクトの振り返りをサポートするAIアシスタントです。
+
+ユーザーが「${topic}」について以下のように回答しました：
+${userResponse}
+
+この回答に対して、励ましや共感を示しながら、簡潔なフィードバックを提供してください。
+
+# フィードバックの方針
+- ユーザーの経験を肯定的に受け止める
+- 回答内容の中で特に印象的な点を一つピックアップする
+- フィードバックのみで追加の質問はしない
+  - ただし、質問は続くので総括する内容は避ける
+- 2-3文程度の簡潔なフィードバックにする
+`;
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  return response.text();
 }
 
 // VOICEVOX関連エンドポイント

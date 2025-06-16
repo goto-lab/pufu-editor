@@ -7,7 +7,6 @@ interface DialogueViewProps {
   isProcessing: boolean;
   currentStepType?: string;
   onNextClick?: () => void;
-  isSpeaking?: boolean;
 }
 
 export const DialogueView: React.FC<DialogueViewProps> = ({
@@ -15,7 +14,6 @@ export const DialogueView: React.FC<DialogueViewProps> = ({
   isProcessing,
   currentStepType,
   onNextClick,
-  isSpeaking,
 }) => {
   return (
     <div className="flex-1 flex items-center justify-center p-8">
@@ -62,6 +60,19 @@ export const DialogueView: React.FC<DialogueViewProps> = ({
                           className="px-6 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           次へ
+                        </button>
+                      )}
+                    </div>
+                  )}
+                {currentMessage.speaker === "system" &&
+                  currentStepType === "feedback" && (
+                    <div className="mt-4 text-right">
+                      {onNextClick && (
+                        <button
+                          onClick={onNextClick}
+                          className="px-6 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          次の質問へ
                         </button>
                       )}
                     </div>

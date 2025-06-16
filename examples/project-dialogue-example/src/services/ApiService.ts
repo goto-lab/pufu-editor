@@ -76,4 +76,26 @@ export class ApiService {
       throw error;
     }
   }
+
+  async generateFeedback(userResponse: string, stepId: number): Promise<string> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/generate-feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userResponse, stepId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.feedback;
+    } catch (error) {
+      console.error('フィードバック生成エラー:', error);
+      throw error;
+    }
+  }
 }

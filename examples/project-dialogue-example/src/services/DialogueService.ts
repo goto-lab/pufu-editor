@@ -7,14 +7,13 @@ interface ScenarioStep {
   displayMessage?: string;
   voiceMessage?: string;
   nextId?: number | null;
-  type: "notice" | "talk" | "question" | "generate";
+  type: "notice" | "talk" | "feedback" | "question" | "generate";
 }
 
 export class DialogueService {
   private static instance: DialogueService;
   private currentStepId = 1;
   private userResponses: { [stepId: number]: string } = {};
-  private messageIdCounter = 0;
   private generatedProjectInfo: Partial<ProjectInfo> = {};
 
   private scenario: ScenarioStep[] = [
@@ -50,58 +49,83 @@ export class DialogueService {
     },
     {
       id: 4,
-      loading: true,
-      displayMessage:
-        "**2. 仮説と取り組みの方向性**\n - 当初の仮説や方向性\n - 仮説や方向性を選んだ理由\n - 仮説の変化と出来事",
-      voiceMessage:
-        "2. 仮説と取り組みの方向性 最初に「こうすればうまく進められるのでは？」といった仮説や方向性はありますか？なぜその仮説や方向性を選んびましたか？また仮説は途中で変化しましたか？それはどのような出来事がきっかけでしたか？",
       nextId: 5,
-      type: "talk",
+      type: "feedback",
     },
     {
       id: 5,
       loading: true,
       displayMessage:
-        "**3. 実際の取り組み**\n - 具体的な「施策」「行動」と手応え\n - リスクを取ったチャレンジ\n - 想定外の出来事や、偶然うまくいったこと",
+        "**2. 仮説と取り組みの方向性**\n - 当初の仮説や方向性\n - 仮説や方向性を選んだ理由\n - 仮説の変化と出来事",
       voiceMessage:
-        "3. 実際の取り組み 具体的にどのような施策、行動をしましたか？手応えを感じた施策や行動はありますか？\n・リスクを取ったチャレンジはありましたか？想定外の出来事や、偶然うまくいったことはありましたか？",
+        "2. 仮説と取り組みの方向性 最初に「こうすればうまく進められるのでは？」といった仮説や方向性はありますか？なぜその仮説や方向性を選んびましたか？また仮説は途中で変化しましたか？それはどのような出来事がきっかけでしたか？",
       nextId: 6,
       type: "talk",
     },
     {
       id: 6,
-      loading: true,
-      displayMessage:
-        "**4. 観察（起きたこと・気づいたこと）**\n - プロジェクトに取り組んだ結果と反応\n - 自分たちにとって意外だったこと\n - うまくいかなかったことから学んだこと",
-      voiceMessage:
-        "4. 観察 プロジェクトに取り組んだ結果、どのような反応が返ってきましたか？自分たちにとって「意外だったこと」はありますか？うまくいかなかったことから、何か学んだことはありますか？",
       nextId: 7,
-      type: "talk",
+      type: "feedback",
     },
     {
       id: 7,
       loading: true,
       displayMessage:
-        "**5. 意味づけ（学び・変化・価値）**\n - プロジェクトを通じて得たこと\n - 視点や前提の変化\n - 自分やチームにとっての意味\n - プロジェクトによる未来の変化",
+        "**3. 実際の取り組み**\n - 具体的な「施策」「行動」と手応え\n - リスクを取ったチャレンジ\n - 想定外の出来事や、偶然うまくいったこと",
       voiceMessage:
-        "5. 意味づけ このプロジェクトを通じて、自分たちは何を得ましたか？視点や前提が変わったことはありますか？チームにとっての意味、自分にとっての意味は何でしょうか？このプロジェクトは、どのように未来につながりますか？",
+        "3. 実際の取り組み 具体的にどのような施策、行動をしましたか？手応えを感じた施策や行動はありますか？\n・リスクを取ったチャレンジはありましたか？想定外の出来事や、偶然うまくいったことはありましたか？",
       nextId: 8,
       type: "talk",
     },
     {
       id: 8,
       nextId: 9,
-      type: "question",
+      type: "feedback",
     },
     {
       id: 9,
-      displayMessage: "回答ありがとうございます。プ譜の作成をはじめます。",
-      voiceMessage: "回答ありがとうございます。プ譜の作成をはじめます。",
+      loading: true,
+      displayMessage:
+        "**4. 観察（起きたこと・気づいたこと）**\n - プロジェクトに取り組んだ結果と反応\n - 自分たちにとって意外だったこと\n - うまくいかなかったことから学んだこと",
+      voiceMessage:
+        "4. 観察 プロジェクトに取り組んだ結果、どのような反応が返ってきましたか？自分たちにとって「意外だったこと」はありますか？うまくいかなかったことから、何か学んだことはありますか？",
       nextId: 10,
-      type: "generate",
+      type: "talk",
     },
     {
       id: 10,
+      nextId: 11,
+      type: "feedback",
+    },
+    {
+      id: 11,
+      loading: true,
+      displayMessage:
+        "**5. 意味づけ（学び・変化・価値）**\n - プロジェクトを通じて得たこと\n - 視点や前提の変化\n - 自分やチームにとっての意味\n - プロジェクトによる未来の変化",
+      voiceMessage:
+        "5. 意味づけ このプロジェクトを通じて、自分たちは何を得ましたか？視点や前提が変わったことはありますか？チームにとっての意味、自分にとっての意味は何でしょうか？このプロジェクトは、どのように未来につながりますか？",
+      nextId: 12,
+      type: "talk",
+    },
+    {
+      id: 12,
+      nextId: 13,
+      type: "feedback",
+    },
+    {
+      id: 13,
+      nextId: 14,
+      type: "question",
+    },
+    {
+      id: 14,
+      displayMessage: "回答ありがとうございます。プ譜の作成をはじめます。",
+      voiceMessage: "回答ありがとうございます。プ譜の作成をはじめます。",
+      nextId: 15,
+      type: "generate",
+    },
+    {
+      id: 15,
       loading: false,
       displayMessage:
         "作成されたプ譜はいかがでしたか？プロジェクトの振り返りに役立てば幸いです。",
@@ -113,8 +137,7 @@ export class DialogueService {
   ];
 
   private constructor() {
-    // インスタンス作成時にカウンターをリセット
-    this.messageIdCounter = 0;
+    // インスタンス作成
   }
 
   static getInstance(): DialogueService {
@@ -171,7 +194,9 @@ export class DialogueService {
     this.currentStepId = stepId;
   }
 
-  getUserResponses(): { [stepId: number]: string } {}
+  getUserResponses(): { [stepId: number]: string } {
+    return this.userResponses;
+  }
 
   getProjectInfo(): Partial<ProjectInfo> {
     return this.generatedProjectInfo;
@@ -215,13 +240,23 @@ export class DialogueService {
             shouldGenerate: true,
             currentStepType: nextStep.type,
           };
+        } else if (nextStep.type === "feedback") {
+          // feedbackタイプはLLMでフィードバックを生成
+          const feedback = await this.generateFeedback();
+          return {
+            response: feedback,
+            voiceText: this.stripMarkdown(feedback),
+            nextPhase: this.getPhaseFromStep(nextStep.type),
+            shouldGenerate: false,
+            currentStepType: nextStep.type,
+          };
         } else if (nextStep.type === "question") {
           // questionタイプはLLMで動的に質問を生成
           const aiResponse = await this.generateAIQuestion();
           return {
             response: aiResponse,
             voiceText: this.stripMarkdown(aiResponse), // AI生成の場合はマークダウン除去
-            nextPhase: this.currentStepId === 8 ? "summary" : "basicInfo",
+            nextPhase: this.currentStepId === 13 ? "summary" : "basicInfo",
             shouldGenerate: false,
             currentStepType: nextStep.type,
           };
@@ -265,7 +300,7 @@ export class DialogueService {
   }> {
     const currentStep = this.getCurrentStep();
 
-    if (!currentStep || currentStep.type !== "notice") {
+    if (!currentStep || (currentStep.type !== "notice" && currentStep.type !== "feedback")) {
       return {
         response: "エラーが発生しました。",
         voiceText: undefined,
@@ -280,7 +315,17 @@ export class DialogueService {
       const nextStep = this.getCurrentStep();
 
       if (nextStep) {
-        if (nextStep.type === "question") {
+        if (nextStep.type === "feedback") {
+          // feedbackタイプの場合はフィードバックを生成
+          const feedback = await this.generateFeedback();
+          return {
+            response: feedback,
+            voiceText: this.stripMarkdown(feedback),
+            nextPhase: this.getPhaseFromStep(nextStep.type),
+            shouldGenerate: false,
+            currentStepType: nextStep.type,
+          };
+        } else if (nextStep.type === "question") {
           // questionタイプの場合はAI質問を生成
           const aiResponse = await this.generateAIQuestion();
           return {
@@ -309,6 +354,25 @@ export class DialogueService {
       shouldGenerate: false,
       currentStepType: "notice",
     };
+  }
+
+  private async generateFeedback(): Promise<string> {
+    try {
+      const apiService = ApiService.getInstance();
+      const previousStepId = this.currentStepId - 1;
+      const userResponse = this.userResponses[previousStepId];
+
+      // APIサーバー経由でフィードバックを生成
+      const feedback = await apiService.generateFeedback(
+        userResponse,
+        previousStepId
+      );
+      return feedback;
+    } catch (error) {
+      console.error("フィードバック生成エラー:", error);
+      // フォールバック: 基本的なフィードバックを返す
+      return "ご回答ありがとうございます。貴重な経験を共有いただきました。次の質問に進みましょう。";
+    }
   }
 
   private async generateAIQuestion(): Promise<string> {
@@ -422,6 +486,8 @@ export class DialogueService {
         return "introduction";
       case "talk":
         return "basicInfo";
+      case "feedback":
+        return "basicInfo";
       case "question":
         return "purposes";
       case "generate":
@@ -434,12 +500,11 @@ export class DialogueService {
   reset() {
     this.currentStepId = 1;
     this.userResponses = {};
-    this.messageIdCounter = 0;
     this.generatedProjectInfo = {};
   }
 
   isComplete(): boolean {
-    return this.currentStepId >= 10;
+    return this.currentStepId >= 15;
   }
 
   isGenerating(): boolean {
