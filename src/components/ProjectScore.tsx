@@ -73,9 +73,9 @@ export const ProjectScore = ({
               }
               return false;
             })
-            .reduce((a, b) => a || b);
+            .reduce((a, b) => a || b, false);
         })
-        .reduce((a, b) => a || b);
+        .reduce((a, b) => a || b, false);
     }
     return false;
   };
