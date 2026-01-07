@@ -1,0 +1,170 @@
+{
+  "winCondition": {
+    "uuid": "er2ugQkdnw5WY2ceSGqVNV",
+    "text": "[勝利条件]プロジェクト成功の判断基準を記入",
+    "comment": {
+      "color": "blue",
+      "text": ""
+    }
+  },
+  "gainingGoal": {
+    "uuid": "2MfGeLrm8PQaaVe3v3ABsV",
+    "text": "[獲得目標]プロジェクトの目標・ミッションを記入",
+    "comment": {
+      "color": "blue",
+      "text": ""
+    }
+  },
+  "purposes": [
+    {
+      "uuid": "9fov1Hdokf2NgsPkWgHatH",
+      "text": "[中間目的1]〜している状態",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      },
+      "measures": [
+        {
+          "uuid": "cgmABssH3uNG8k5cdato5a",
+          "text": "[施策]〜する",
+          "comment": {
+            "color": "blue",
+            "text": ""
+          },
+          "color": "red"
+        },
+        {
+          "uuid": "dNmKUssH2tNG9k5cdato5a",
+          "text": "[施策]〜を実施する",
+          "comment": {
+            "color": "blue",
+            "text": ""
+          },
+          "color": "white"
+        }
+      ]
+    },
+    {
+      "uuid": "6dVHgBSKhKWrrnA7DP8pYJ",
+      "text": "[中間目的2]〜になっている",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      },
+      "measures": [
+        {
+          "uuid": "cPUE9CEA4XqVKmRCP5LWdB",
+          "text": "[施策]〜を作成する",
+          "comment": {
+            "color": "blue",
+            "text": ""
+          },
+          "color": "white"
+        },
+        {
+          "uuid": "aUTXd41VA9FqT36QPDWhRW",
+          "text": "[施策]関係者との調整を行う",
+          "comment": {
+            "color": "blue",
+            "text": ""
+          },
+          "color": "green"
+        }
+      ]
+    },
+    {
+      "uuid": "7eWIhCSLiLXssoB8EQ9qZK",
+      "text": "[中間目的3]〜が実現している",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      },
+      "measures": [
+        {
+          "uuid": "bUTXd41Vc3FqG36QPDWhDW",
+          "text": "[施策]リスク対策を準備する",
+          "comment": {
+            "color": "blue",
+            "text": ""
+          },
+          "color": "blue"
+        },
+        {
+          "uuid": "cUTXd42Vc4FqH37QPDWhEW",
+          "text": "[施策]余裕があれば追加機能を実装する",
+          "comment": {
+            "color": "blue",
+            "text": ""
+          },
+          "color": "yellow"
+        }
+      ]
+    }
+  ],
+  "elements": {
+    "people": {
+      "uuid": "dSBEkjE97WJKusXj4mX3o9",
+      "text": "[ひと]価値観、実績、メンバー、顧客など",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "money": {
+      "uuid": "3riARy1KMx37SVDqia834e",
+      "text": "[お金]予算、目標、利益、コストなど",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "time": {
+      "uuid": "gv27PgCn4cfknyJfD9LmuH",
+      "text": "[時間]スケジュール、作業時間など",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "quality": {
+      "uuid": "3aYHtKs1XCXJbCxRwHTV4M",
+      "text": "[クオリティ]満足感、仕上がり感、技術など",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "businessScheme": {
+      "uuid": "1dfQPFG8icArT1tPnq3Ybn",
+      "text": "[商流/座組]ビジネスモデル、価値やお金の流れなど",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "environment": {
+      "uuid": "4X4FuZozxqPMmKLLXLBvzJ",
+      "text": "[環境]業界、組織、国・地域など",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "rival": {
+      "uuid": "vXgTh4JMQQorRiXyFCvN7o",
+      "text": "[ライバル]同じ成果や資源を取り合う存在",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "foreignEnemy": {
+      "uuid": "cZH7wrekSzRD2R2vaYazHj",
+      "text": "[外敵]目的を積極的に邪魔するヒトやコト",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    }
+  }
+}
