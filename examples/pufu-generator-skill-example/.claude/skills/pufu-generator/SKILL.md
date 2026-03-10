@@ -17,7 +17,7 @@ description: |
 ## ワークフロー概要
 
 ```
-入力ファイル → 構造解析 → マークダウン化 → プ譜要素抽出 → サマリ生成 → JSON出力 → サマリ表示
+入力ファイル → 構造解析 → マークダウン化 → プ譜要素抽出 → サマリ生成 → JSON出力 → サマリ表示 → 画像生成
 ```
 
 **処理フロー：**
@@ -27,6 +27,7 @@ description: |
 3. **サマリ生成**: 複数の抽出ファイルを統合してサマリファイルを作成
 4. **JSON生成**: サマリからプ譜エディタ互換のJSONを生成
 5. **表示**: プ譜エディタでJSONファイルのサマリを表示
+6. **画像生成**（オプション）: Playwrightでプ譜をPNG画像に変換
 
 ## プ譜の構成要素
 
@@ -210,6 +211,44 @@ description: |
 - 廟算八要素の充足状況
 - プ譜エディタでの表示用リンク（[https://goto-lab.github.io/pufu-editor/](https://goto-lab.github.io/pufu-editor/) でJSONをインポート可能）
 
+## Step 6: 画像生成（オプション）
+
+Playwrightを使用してプ譜JSONからPNG画像を生成する。
+
+**処理フロー：**
+
+1. Storybookのiframeページ（Example1ストーリー）を開く
+2. Importモーダル経由でプ譜JSONデータをロード
+3. レンダリング完了後、`#score-{key}` 要素のスクリーンショットを取得
+4. PNG画像として保存
+
+**出力先：** `{work_dir}/05_image/pufu.png`
+
+**使用方法：**
+
+```bash
+# 起動済みStorybookを使用（推奨）
+python scripts/capture_pufu_image.py pufu.json output.png --storybook-url http://localhost:6006
+
+# GitHub PagesのStorybookを使用（インストール不要）
+python scripts/capture_pufu_image.py pufu.json output.png --storybook-url https://goto-lab.github.io/pufu-editor
+
+# ローカルStorybookを自動起動
+python scripts/capture_pufu_image.py pufu.json output.png --project-dir /path/to/pufu-editor
+```
+
+**オプション：**
+
+- `--width`: ビューポート幅（デフォルト: 1200）
+- `--dark`: ダークモードで描画
+
+**必要なライブラリ：**
+
+```bash
+pip install playwright --break-system-packages
+playwright install chromium
+```
+
 ## 使用例
 
 ### 基本的な使い方
@@ -224,8 +263,12 @@ python scripts/convert_to_markdown.py /mnt/user-data/uploads /home/claude/pufu_w
 # 3. プ譜JSON生成（サマリ作成後）
 python scripts/generate_pufu_json.py /home/claude/pufu_work/03_summary/summary.json /home/claude/pufu_work/04_output/pufu.json
 
-# 4. 出力ファイルを提供
+# 4. 画像生成（オプション）
+python scripts/capture_pufu_image.py /home/claude/pufu_work/04_output/pufu.json /home/claude/pufu_work/05_image/pufu.png --storybook-url https://goto-lab.github.io/pufu-editor
+
+# 5. 出力ファイルを提供
 cp /home/claude/pufu_work/04_output/pufu.json /mnt/user-data/outputs/
+cp /home/claude/pufu_work/05_image/pufu.png /mnt/user-data/outputs/
 ```
 
 ### キーワードマッピング（抽出のヒント）

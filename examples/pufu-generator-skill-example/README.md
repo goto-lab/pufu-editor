@@ -44,10 +44,10 @@ Claudeに以下のように依頼してください：
 
 ```
 
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│ 入力ファイル │ → │ マークダウン │ → │ 要素抽出    │ → │ JSON生成    │
-│ (pptx等)    │    │ 変換        │    │             │    │             │
-└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ 入力ファイル │ → │ マークダウン │ → │ 要素抽出    │ → │ JSON生成    │ → │ 画像生成    │
+│ (pptx等)    │    │ 変換        │    │             │    │             │    │ (オプション) │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
 
 ```
 
@@ -56,6 +56,7 @@ Claudeに以下のように依頼してください：
 3. **サマリ生成**: 複数ファイルの情報を統合
 4. **JSON生成**: pufu-editor互換形式で出力
 5. **サマリ表示**: 生成結果の概要を表示
+6. **画像生成**（オプション）: Playwrightでプ譜をPNG画像に変換
 
 ## プ譜の構成要素
 
@@ -175,6 +176,22 @@ python scripts/generate_pufu_json.py --sample /home/claude/pufu_work/sample_summ
 
 ```
 
+### プ譜画像生成スクリプト
+
+```bash
+python scripts/capture_pufu_image.py <プ譜JSONパス> <出力画像パス> [オプション]
+
+# 例: GitHub PagesのStorybookを使用（インストール不要）
+python scripts/capture_pufu_image.py pufu.json pufu.png --storybook-url https://goto-lab.github.io/pufu-editor
+
+# 例: ローカルStorybookを使用
+python scripts/capture_pufu_image.py pufu.json pufu.png --storybook-url http://localhost:6006
+
+# 例: ダークモード・幅指定
+python scripts/capture_pufu_image.py pufu.json pufu.png --storybook-url https://goto-lab.github.io/pufu-editor --dark --width 1400
+
+```
+
 ### 必要なPythonライブラリ
 
 ```bash
@@ -192,6 +209,10 @@ pip install PyPDF2 --break-system-packages
 # Word処理
 pip install python-docx --break-system-packages
 
+# 画像生成（オプション）
+pip install playwright --break-system-packages
+playwright install chromium
+
 ```
 
 ## ファイル構成
@@ -204,7 +225,8 @@ pufu-generator/
 │   └── extraction-rules.md      # 要素抽出ルール
 ├── scripts/
 │   ├── convert_to_markdown.py   # ドキュメント変換スクリプト
-│   └── generate_pufu_json.py    # JSON生成スクリプト
+│   ├── generate_pufu_json.py    # JSON生成スクリプト
+│   └── capture_pufu_image.py    # 画像生成スクリプト（Playwright）
 └── assets/
     └── pufu_template.json       # プ譜JSONテンプレート
 
