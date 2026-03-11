@@ -1,0 +1,164 @@
+{
+  "phase1": {
+    "winCondition": {
+      "uuid": "wc-phase1-template-001",
+      "text": "[勝利条件]第1局面の成功基準を記入",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "gainingGoal": {
+      "uuid": "gg-phase1-template-001",
+      "text": "[獲得目標]第1局面の目標を記入",
+      "comment": {
+        "color": "blue",
+        "text": ""
+      }
+    },
+    "purposes": [
+      {
+        "uuid": "ip-phase1-template-001",
+        "text": "[中間目的1]〜している状態",
+        "comment": {
+          "color": "blue",
+          "text": ""
+        },
+        "measures": [
+          {
+            "uuid": "ms-phase1-template-001",
+            "text": "[施策]〜する",
+            "comment": {
+              "color": "blue",
+              "text": ""
+            },
+            "color": "red"
+          }
+        ]
+      }
+    ],
+    "elements": {
+      "people": {
+        "uuid": "el-phase1-people-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "money": {
+        "uuid": "el-phase1-money-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "time": {
+        "uuid": "el-phase1-time-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "quality": {
+        "uuid": "el-phase1-quality-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "businessScheme": {
+        "uuid": "el-phase1-bs-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "environment": {
+        "uuid": "el-phase1-env-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "rival": {
+        "uuid": "el-phase1-rival-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      },
+      "foreignEnemy": {
+        "uuid": "el-phase1-fe-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "" }
+      }
+    }
+  },
+  "phase2": {
+    "winCondition": {
+      "uuid": "wc-phase2-template-001",
+      "text": "[勝利条件]第1局面の達成度を評価",
+      "comment": {
+        "color": "blue",
+        "text": "[振り返り]達成できたか、どの程度達成できたかを記入"
+      }
+    },
+    "gainingGoal": {
+      "uuid": "gg-phase2-template-001",
+      "text": "[獲得目標]第1局面の目標（振り返り）",
+      "comment": {
+        "color": "blue",
+        "text": "[振り返り]目標の妥当性や変更があれば記入"
+      }
+    },
+    "purposes": [
+      {
+        "uuid": "ip-phase2-template-001",
+        "text": "[中間目的1]実際にどうなったか",
+        "comment": {
+          "color": "green",
+          "text": "[振り返り]達成状況を記入"
+        },
+        "measures": [
+          {
+            "uuid": "ms-phase2-template-001",
+            "text": "[施策]実際にやったこと",
+            "comment": {
+              "color": "green",
+              "text": "[振り返り]実施結果を記入"
+            },
+            "color": "red"
+          }
+        ]
+      }
+    ],
+    "elements": {
+      "people": {
+        "uuid": "el-phase2-people-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "money": {
+        "uuid": "el-phase2-money-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "time": {
+        "uuid": "el-phase2-time-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "quality": {
+        "uuid": "el-phase2-quality-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "businessScheme": {
+        "uuid": "el-phase2-bs-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "environment": {
+        "uuid": "el-phase2-env-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "rival": {
+        "uuid": "el-phase2-rival-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      },
+      "foreignEnemy": {
+        "uuid": "el-phase2-fe-001",
+        "text": "",
+        "comment": { "color": "blue", "text": "[振り返り]実際の状況を記入" }
+      }
+    }
+  }
+}
