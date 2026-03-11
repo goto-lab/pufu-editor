@@ -13,15 +13,22 @@
 7. [廟算八要素（elements）](#廟算八要素elements)
 8. [UUID生成](#uuid生成)
 9. [完全なスキーマ例](#完全なスキーマ例)
+10. [複数局面（ProjectScoreMap）](#複数局面projectscoremap)
 
 ## 基本構造
 
 ```typescript
+// 単一局面のプ譜
 interface PufuScore {
   winCondition: TextElement;      // 勝利条件
   gainingGoal: TextElement;       // 獲得目標
   purposes: Purpose[];            // 中間目的（配列）
   elements: Elements;             // 廟算八要素
+}
+
+// 複数局面のプ譜（キー→プ譜のマップ）
+interface ProjectScoreMap {
+  [key: string]: PufuScore;       // 例: {"phase1": {...}, "phase2": {...}}
 }
 ```
 
@@ -417,6 +424,116 @@ def generate_simple_uuid(length=22):
       "uuid": "cZH7wrekSzRD2R2vaYazHj",
       "text": "開発リソース不足、レガシー基幹システム連携",
       "comment": { "color": "blue", "text": "" }
+    }
+  }
+}
+```
+
+## 複数局面（ProjectScoreMap）
+
+プロジェクトが時系列で複数のステップを持つ場合、`ProjectScoreMap` 形式で複数局面のプ譜を一つのJSONファイルにまとめる。
+
+### 基本構造
+
+```typescript
+interface ProjectScoreMap {
+  [key: string]: PufuScore;
+}
+```
+
+キーの命名規則: `phase1`, `phase2`, `phase3`, ...
+
+- **奇数局面（phase1, phase3, ...）**: 計画局面
+- **偶数局面（phase2, phase4, ...）**: 振り返り局面
+
+### 振り返り局面の特徴
+
+振り返り局面（偶数）は、前の計画局面と同じ構造を持つが、**コメント** を活用して実績・評価を記録する。
+
+**コメント色の使い分け（振り返り局面）：**
+
+| 色 | 意味 |
+|----|------|
+| `green` | 達成・成功した項目 |
+| `red` | 未達・課題が残った項目 |
+| `blue` | 情報・メモ（デフォルト） |
+
+### 複数局面の例
+
+```json
+{
+  "phase1": {
+    "winCondition": {
+      "uuid": "wc-p1-xxxx",
+      "text": "要件にステークホルダー全員が合意",
+      "comment": { "color": "blue", "text": "" }
+    },
+    "gainingGoal": {
+      "uuid": "gg-p1-xxxx",
+      "text": "ECサイトの要件定義完了",
+      "comment": { "color": "blue", "text": "" }
+    },
+    "purposes": [
+      {
+        "uuid": "ip-p1-xxxx",
+        "text": "ビジネス要件が明確になっている",
+        "comment": { "color": "blue", "text": "" },
+        "measures": [
+          {
+            "uuid": "ms-p1-xxxx",
+            "text": "市場調査を実施する",
+            "comment": { "color": "blue", "text": "" },
+            "color": "red"
+          }
+        ]
+      }
+    ],
+    "elements": {
+      "people": { "uuid": "el-p1-xxxx", "text": "PM1名、エンジニア3名", "comment": { "color": "blue", "text": "" } },
+      "money": { "uuid": "el-p1-xxxx", "text": "企画予算300万円", "comment": { "color": "blue", "text": "" } },
+      "time": { "uuid": "el-p1-xxxx", "text": "2025年1月〜2月", "comment": { "color": "blue", "text": "" } },
+      "quality": { "uuid": "el-p1-xxxx", "text": "要件定義書の網羅性90%以上", "comment": { "color": "blue", "text": "" } },
+      "businessScheme": { "uuid": "el-p1-xxxx", "text": "自社開発", "comment": { "color": "blue", "text": "" } },
+      "environment": { "uuid": "el-p1-xxxx", "text": "EC市場拡大中", "comment": { "color": "blue", "text": "" } },
+      "rival": { "uuid": "el-p1-xxxx", "text": "大手ECモール", "comment": { "color": "blue", "text": "" } },
+      "foreignEnemy": { "uuid": "el-p1-xxxx", "text": "社内調整の遅れ", "comment": { "color": "blue", "text": "" } }
+    }
+  },
+  "phase2": {
+    "winCondition": {
+      "uuid": "wc-p2-xxxx",
+      "text": "要件にステークホルダー全員が合意",
+      "comment": { "color": "green", "text": "合意達成。一部優先度の再調整が必要" }
+    },
+    "gainingGoal": {
+      "uuid": "gg-p2-xxxx",
+      "text": "ECサイトの要件定義完了",
+      "comment": { "color": "blue", "text": "概ね完了。追加要件2件が発生" }
+    },
+    "purposes": [
+      {
+        "uuid": "ip-p2-xxxx",
+        "text": "ビジネス要件が明確になっている",
+        "comment": { "color": "green", "text": "ビジネス要件は明確になった" },
+        "measures": [
+          {
+            "uuid": "ms-p2-xxxx",
+            "text": "市場調査を実施する",
+            "comment": { "color": "green", "text": "完了。有益な知見を獲得" },
+            "color": "red"
+          }
+        ]
+      }
+    ],
+    "elements": {
+      "people": { "uuid": "el-p2-xxxx", "text": "PM1名、エンジニア3名", "comment": { "color": "red", "text": "デザイナー途中参加で立ち上がりに時間を要した" } },
+      "money": { "uuid": "el-p2-xxxx", "text": "企画予算300万円", "comment": { "color": "green", "text": "予算内（実績250万円）" } },
+      "time": { "uuid": "el-p2-xxxx", "text": "2025年1月〜2月", "comment": { "color": "green", "text": "予定通り完了" } },
+      "quality": { "uuid": "el-p2-xxxx", "text": "要件定義書の網羅性90%以上", "comment": { "color": "green", "text": "95%達成" } },
+      "businessScheme": { "uuid": "el-p2-xxxx", "text": "自社開発", "comment": { "color": "blue", "text": "" } },
+      "environment": { "uuid": "el-p2-xxxx", "text": "EC市場拡大中", "comment": { "color": "blue", "text": "" } },
+      "rival": { "uuid": "el-p2-xxxx", "text": "大手ECモール", "comment": { "color": "blue", "text": "" } },
+      "foreignEnemy": { "uuid": "el-p2-xxxx", "text": "社内調整の遅れ", "comment": { "color": "red", "text": "1週間の遅れが発生" } }
     }
   }
 }

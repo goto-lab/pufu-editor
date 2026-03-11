@@ -113,7 +113,14 @@ download("sample1", "png");
 - [amplify-pinecone-example](https://github.com/goto-lab/pufu-editor/tree/main/examples/amplify-pinecone-example)
   - ベクトルデータベースの[pinecone](https://www.pinecone.io/)を利用してプ譜の検索及び異なるプ譜の要素間の類似度を算出する例
   - amplify-gen2-exampleの拡張のためプ譜はAWS上に保存
+- [project-dialogue-example](https://github.com/goto-lab/pufu-editor/tree/main/examples/project-dialogue-example)
+  - 音声対話機能付きのプロジェクト振り返りシステム。OpenAI/Gemini APIとVOICEVOXを使用した音声合成機能を備えた例
+- [pufu-generator-skill](https://github.com/goto-lab/pufu-editor/tree/main/examples/pufu-generator-skill)
+  - 既存のドキュメント（PowerPoint、Excel、PDF、Word、テキスト）からプ譜エディタ互換のJSONデータを自動生成するClaude Codeスキルの例
 
 ## 活動履歴
 
 - [Open Source Conference 2024 Kyoto](https://event.ospn.jp/osc2024-kyoto/) (展示)
+- [Open Source Conference 2025 Osaka](https://event.ospn.jp/osc2025-osaka/) (展示)
+- [Open Source Conference 2025 Kyoto](https://event.ospn.jp/osc2025-kyoto/) (展示)
+- [Open Source Conference 2026 Osaka](https://event.ospn.jp/osc2026-osaka/) (展示・セミナー)
