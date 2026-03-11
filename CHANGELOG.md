@@ -1,6 +1,14 @@
 # Change Log
 
-## [0.9.10] - 2025-2-10
+## [0.9.12] - 2026-03-11
+
+- Fix: Pufu import error #60
+
+## [0.9.11] - 2025-12-16
+
+- Fix: Pufu import error #54
+
+## [0.9.10] - 2025-12-10
 
 - Add: Markdown format export
 
