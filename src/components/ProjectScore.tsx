@@ -423,8 +423,24 @@ const ScoreLoading = ({ i18n }: ScoreComponentProps) => {
 
 export const setScore = (key: string, json: string) => {
   if (state && key in state.scores) {
-    createCheckers(modelsTI).ProjectScoreModel.check(JSON.parse(json));
-    state.setScore(key, JSON.parse(json));
+    const parsed = JSON.parse(json);
+    // purposesが配列でない場合は空配列にし、施策のcolorが未設定の場合はデフォルト値を設定
+    if (!Array.isArray(parsed.purposes)) {
+      parsed.purposes = [];
+    }
+    parsed.purposes.forEach((purpose: { measures?: unknown }) => {
+      if (!Array.isArray(purpose?.measures)) {
+        if (purpose) purpose.measures = [];
+        return;
+      }
+      purpose.measures.forEach((measure: { color?: string } | null) => {
+        if (measure && !measure.color) {
+          measure.color = 'white';
+        }
+      });
+    });
+    createCheckers(modelsTI).ProjectScoreModel.check(parsed);
+    state.setScore(key, parsed);
   } else {
     logger.error(`Not found score. key: ${key}`);
   }
