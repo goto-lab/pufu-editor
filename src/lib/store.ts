@@ -302,6 +302,9 @@ export const createProjectScoreStore = create<ProjectScoreStore>()(
               state.scores[key].purposes[purposeIndex].measures[
                 measureIndex
               ].comment = measure.comment;
+              state.scores[key].purposes[purposeIndex].measures[
+                measureIndex
+              ].progress = measure.progress;
             }
           }
         }

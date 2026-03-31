@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { ReactSortable } from "react-sortablejs";
 import domtoimage from "dom-to-image";
 import modelsTI from "../lib/models-ti";
@@ -22,6 +22,7 @@ export interface ProjectScoreProps {
   preview?: boolean;
   dark?: boolean;
   mobile?: boolean;
+  showProgress?: boolean;
   lang?: SupportLanguage;
   textSize?: TextSize;
   width?: number;
@@ -37,6 +38,7 @@ export const ProjectScore = ({
   preview = false,
   dark = false,
   mobile = false,
+  showProgress = false,
   lang = "ja",
   textSize = "small",
   width,
@@ -45,9 +47,9 @@ export const ProjectScore = ({
   const [scoreKey] = useState(uniqueKey ?? createScoreKey());
   const scoreRef = useRef<HTMLDivElement | null>(null);
 
-  const [action, setAction] = useState(false);
+  const [action, setAction] = useState(0);
   const updateAction = () => {
-    setAction(!action);
+    setAction((prev) => prev + 1);
   };
 
   state = useProjectScoreStoreEffect(scoreKey, updateAction, initScore);
@@ -80,6 +82,75 @@ export const ProjectScore = ({
     return false;
   };
 
+  // 2カラム表示かどうかを判定（施策エリアの幅が十分ある場合のみ）
+  const [isTwoColumn, setIsTwoColumn] = useState(false);
+  const observerRef = useRef<ResizeObserver | null>(null);
+  const measuresRef = useCallback((node: HTMLDivElement | null) => {
+    // 前のobserverをクリーンアップ
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+    if (!node || mobile) {
+      setIsTwoColumn(false);
+      return;
+    }
+    const checkWidth = () => {
+      // 施策エリア（w-1/2）の幅が280px未満なら1カラムに切り替え
+      const measuresWidth = node.clientWidth / 2;
+      setIsTwoColumn(measuresWidth >= 280);
+    };
+    checkWidth();
+    observerRef.current = new ResizeObserver(checkWidth);
+    observerRef.current.observe(node);
+  }, [mobile]);
+
+  // カラム数変更時にEdgesの線を再描画（DOM確定後に実行）
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      updateAction();
+    });
+  }, [isTwoColumn]);
+
+  // 右列（中間目的に近い列）の施策UUIDを算出（2カラム時、線の接続対象）
+  // actionを依存配列に含めることで施策の追加・削除・並び替え時にも再計算される
+  const connectMeasureUuids = useMemo(() => {
+    if (!isTwoColumn || !(scoreKey in state.scores)) return undefined;
+    const uuids = new Set<string>();
+
+    // 共有施策テキストを特定（複数purposeに存在するテキスト）
+    const textPurposeCount = new Map<string, number>();
+    state.scores[scoreKey].purposes.forEach((p) => {
+      const seen = new Set<string>();
+      p.measures.forEach((m) => {
+        if (m.text && !seen.has(m.text)) {
+          seen.add(m.text);
+          textPurposeCount.set(m.text, (textPurposeCount.get(m.text) || 0) + 1);
+        }
+      });
+    });
+    const isSharedText = (text: string) => text && (textPurposeCount.get(text) || 0) > 1;
+
+    state.scores[scoreKey].purposes.forEach((p) => {
+      // 共有施策は常に右列（接続対象）
+      // 通常施策は2カラムグリッドの右列のみ接続対象
+      const normalMeasures = p.measures.filter((m) => !isSharedText(m.text));
+      const count = normalMeasures.length;
+      normalMeasures.forEach((m, idx) => {
+        if (count <= 1 || idx % 2 === 1 || idx === count - 1) {
+          uuids.add(m.uuid);
+        }
+      });
+      // 共有施策は常に接続対象
+      p.measures.forEach((m) => {
+        if (isSharedText(m.text)) {
+          uuids.add(m.uuid);
+        }
+      });
+    });
+    return uuids;
+  }, [scoreKey, isTwoColumn, action]);
+
   const scoreStyle = useMemo(() => {
     return width
       ? {
@@ -107,6 +178,7 @@ export const ProjectScore = ({
               scores={state.scores}
               action={action}
               preview={preview}
+              connectMeasureUuids={connectMeasureUuids}
             ></Edges>
           )}
           {!mobile && (
@@ -134,7 +206,7 @@ export const ProjectScore = ({
             border-gray-300 dark:border-gray-600
             `}
           >
-            <div className={`w-2/3`}>
+            <div className={`w-2/3`} ref={measuresRef}>
               <MeasurePurposeHeader i18n={i18n} />
               {!preview && state.scores[scoreKey].purposes.length === 0 && (
                 <div
@@ -151,6 +223,24 @@ export const ProjectScore = ({
                 </div>
               )}
               {state.scores[scoreKey].purposes.map((purpose, purposeIndex) => {
+                // 共有施策の判定（他のpurposeにも同じテキストが存在するか）
+                const otherTexts = new Set<string>();
+                state.scores[scoreKey].purposes.forEach((p, pIdx) => {
+                  if (pIdx !== purposeIndex) {
+                    p.measures.forEach((m) => {
+                      if (m.text) otherTexts.add(m.text);
+                    });
+                  }
+                });
+                const isSharedMeasure = (text: string) => text && otherTexts.has(text);
+                // 共有施策は最初のpurposeでのみ表示
+                const isFirstPurposeForText = (text: string) => {
+                  for (const p of state.scores[scoreKey].purposes) {
+                    if (p.measures.some((m) => m.text === text)) return p.uuid === purpose.uuid;
+                  }
+                  return false;
+                };
+
                 return (
                   <div
                     className={`
@@ -161,72 +251,142 @@ export const ProjectScore = ({
                   >
                     <div
                       className={`
-                        w-1/2
-                        ${mobile ? "px-2" : "pl-3 pr-6"} 
+                        w-1/2 overflow-hidden
+                        ${mobile ? "px-2" : "pl-3 pr-3"}
                         pt-3
                       `}
                     >
-                      <ReactSortable
-                        list={purpose.measures.map((m) => ({
-                          id: m.uuid,
-                          ...m,
-                        }))}
-                        setList={(measures) => {
-                          const before = purpose.measures
-                            .map((m) => m.uuid)
-                            .join();
-                          const after = measures.map((m) => m.uuid).join();
-                          if (before !== after) {
-                            state.setMeasures(scoreKey, purpose.uuid, measures);
-                            updateAction();
-                          }
-                        }}
-                        animation={150}
-                        delay={2}
-                        filter={"textarea"}
-                        preventOnFilter={false}
-                      >
-                        {purpose.measures.map((measure, measureIndex) => (
-                          <div
-                            key={`measure-${measure.uuid}`}
-                            className="pb-1"
-                            onClick={updateAction}
-                            onBlur={updateAction}
-                          >
-                            <Measure
-                              scoreKey={scoreKey}
-                              measure={measure}
-                              feedback={feedback}
-                              preview={preview}
-                              dark={dark}
-                              mobile={mobile}
-                              i18n={i18n}
-                              textSize={textSize}
-                              hidden={hideMeasure(
-                                purposeIndex,
-                                measureIndex,
-                                measure.text
-                              )}
-                              onChange={(measure) => {
-                                state.setMeasure(
-                                  scoreKey,
-                                  purpose.uuid,
-                                  measure
+                      {preview && isTwoColumn ? (
+                        /* プレビュー+2カラム時: 通常施策は2カラム、共有施策は右寄せ */
+                        <div className="grid grid-cols-2 gap-x-2">
+                          {(() => {
+                            const normalMeasures = purpose.measures
+                              .filter((m) => !isSharedMeasure(m.text));
+                            const items: React.ReactNode[] = [];
+                            let colPos = 0; // 現在のグリッド列位置（0=左, 1=右）
+                            let normalIdx = 0;
+                            purpose.measures.forEach((m) => {
+                              const shared = isSharedMeasure(m.text);
+                              if (shared && !isFirstPurposeForText(m.text)) return;
+                              if (shared) {
+                                // 共有施策は右列に配置。左列にいる場合のみスペーサー挿入
+                                if (colPos % 2 === 0) {
+                                  items.push(<div key={`spacer-${m.uuid}`} />);
+                                  colPos++;
+                                }
+                                items.push(
+                                  <div key={`measure-${m.uuid}`} className="pb-1">
+                                    <Measure scoreKey={scoreKey} measure={m}
+                                      feedback={feedback} preview={preview} dark={dark}
+                                      mobile={mobile} showProgress={showProgress}
+                                      i18n={i18n} textSize={textSize} hidden={false} />
+                                  </div>
                                 );
-                                updateAction();
-                              }}
-                              onDelete={(measure) => {
-                                state.deleteMeasure(
-                                  scoreKey,
-                                  purpose.uuid,
-                                  measure.uuid
+                                colPos++;
+                              } else {
+                                // 通常施策の最後が左列に来る場合、右寄せ
+                                const isLastNormal = normalIdx === normalMeasures.length - 1;
+                                const normalIsOdd = normalMeasures.length % 2 === 1;
+                                if (isLastNormal && normalIsOdd && colPos % 2 === 0) {
+                                  items.push(<div key={`spacer-${m.uuid}`} />);
+                                  colPos++;
+                                }
+                                items.push(
+                                  <div key={`measure-${m.uuid}`} className="pb-1">
+                                    <Measure scoreKey={scoreKey} measure={m}
+                                      feedback={feedback} preview={preview} dark={dark}
+                                      mobile={mobile} showProgress={showProgress}
+                                      i18n={i18n} textSize={textSize} hidden={false} />
+                                  </div>
                                 );
-                                updateAction();
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </ReactSortable>
+                                colPos++;
+                                normalIdx++;
+                              }
+                            });
+                            return items;
+                          })()}
+                        </div>
+                      ) : (
+                        /* 編集モードまたは1カラム時 */
+                        <ReactSortable
+                          className={`${isTwoColumn ? 'grid grid-cols-2 gap-x-2' : ''}`}
+                          list={purpose.measures.map((m) => ({
+                            id: m.uuid,
+                            ...m,
+                          }))}
+                          setList={(measures) => {
+                            const before = purpose.measures
+                              .map((m) => m.uuid)
+                              .join();
+                            const after = measures.map((m) => m.uuid).join();
+                            if (before !== after) {
+                              state.setMeasures(scoreKey, purpose.uuid, measures);
+                              updateAction();
+                            }
+                          }}
+                          animation={150}
+                          delay={2}
+                          filter={"textarea,input"}
+                          preventOnFilter={false}
+                        >
+                          {(() => {
+                            const normalMeasures = purpose.measures
+                              .filter((m) => !isSharedMeasure(m.text));
+                            let normalIdx = 0;
+                            return purpose.measures.map((measure, measureIndex) => {
+                              const shared = isTwoColumn && isSharedMeasure(measure.text);
+                              let rightAlign = shared;
+                              if (!shared && isTwoColumn) {
+                                const isLastNormal = normalIdx === normalMeasures.length - 1;
+                                const normalIsOdd = normalMeasures.length % 2 === 1;
+                                if (isLastNormal && normalIsOdd) rightAlign = true;
+                                normalIdx++;
+                              }
+                              return (
+                            <div
+                              key={`measure-${measure.uuid}`}
+                              className={`pb-1 ${rightAlign ? 'col-start-2' : ''}`}
+                              onClick={updateAction}
+                              onBlur={updateAction}
+                            >
+                              <Measure
+                                scoreKey={scoreKey}
+                                measure={measure}
+                                feedback={feedback}
+                                preview={preview}
+                                dark={dark}
+                                mobile={mobile}
+                                showProgress={showProgress}
+                                i18n={i18n}
+                                textSize={textSize}
+                                hidden={hideMeasure(
+                                  purposeIndex,
+                                  measureIndex,
+                                  measure.text
+                                )}
+                                onChange={(measure) => {
+                                  state.setMeasure(
+                                    scoreKey,
+                                    purpose.uuid,
+                                    measure
+                                  );
+                                  updateAction();
+                                }}
+                                onDelete={(measure) => {
+                                  state.deleteMeasure(
+                                    scoreKey,
+                                    purpose.uuid,
+                                    measure.uuid
+                                  );
+                                  updateAction();
+                                }}
+                              />
+                            </div>
+                              );
+                            });
+                          })()}
+                        </ReactSortable>
+                      )}
                       {!preview && purpose.measures.length === 0 && (
                         <div
                           className={`
@@ -433,9 +593,13 @@ export const setScore = (key: string, json: string) => {
         if (purpose) purpose.measures = [];
         return;
       }
-      purpose.measures.forEach((measure: { color?: string } | null) => {
+      purpose.measures.forEach((measure: { color?: string; progress?: number } | null) => {
         if (measure && !measure.color) {
           measure.color = 'white';
+        }
+        // 進捗値のバリデーション
+        if (measure && measure.progress !== undefined) {
+          measure.progress = Math.max(0, Math.min(100, measure.progress));
         }
       });
     });
@@ -493,7 +657,7 @@ export const getScoreMarkdown = (key: string) => {
               .map((measure, measureIndex) => {
                 let measureText = replaceNL(
                   `    - 施策${purposeIndex + 1}-${measureIndex + 1}: `,
-                  measure.text
+                  measure.text + (measure.progress !== undefined ? ` (${measure.progress}%)` : '')
                 );
                 if (measure.comment.text) {
                   measureText += replaceNL(

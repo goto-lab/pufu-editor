@@ -28,6 +28,7 @@ export interface MeasureProps {
   preview?: boolean;
   dark?: boolean;
   mobile?: boolean;
+  showProgress?: boolean;
   i18n?: i18n;
   textSize?: TextSize;
 }
@@ -42,12 +43,14 @@ export const Measure = ({
   preview = false,
   dark = false,
   mobile = false,
+  showProgress = false,
   i18n,
   textSize = "small",
 }: MeasureProps) => {
   const [text, setText] = useState(measure.text);
   const [color, setColor] = useState(measure.color);
   const [comment, setComment] = useState(measure.comment);
+  const [progress, setProgress] = useState(measure.progress);
   const [showComment, setShowComment] = useState(
     preview && measure.comment.text.length > 0
   );
@@ -77,36 +80,47 @@ export const Measure = ({
     onChange?.({ ...measure, color });
   };
 
+  const handleProgressChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value === '' ? undefined : Math.max(0, Math.min(100, Number(e.target.value)));
+    setProgress(value);
+    onChange?.({ ...measure, progress: value });
+  };
+
   const colors = {
     white: {
       border: "border-gray-400",
       icon: "text-gray-400",
       pallet: "text-gray-400",
       bg: "bg-white dark:bg-gray-900",
+      progressBg: "bg-gray-400",
     },
     blue: {
       border: "border-sky-400",
       icon: "text-sky-400",
       pallet: "text-sky-400",
       bg: "bg-sky-50 dark:bg-sky-900",
+      progressBg: "bg-sky-400",
     },
     green: {
       border: "border-green-500",
       icon: "text-green-500",
       pallet: "text-green-400",
       bg: "bg-green-50 dark:bg-green-900",
+      progressBg: "bg-green-500",
     },
     red: {
       border: "border-red-300",
       icon: "text-red-300",
       pallet: "text-red-400",
       bg: "bg-red-50 dark:bg-red-900",
+      progressBg: "bg-red-300",
     },
     yellow: {
       border: "border-yellow-500",
       icon: "text-yellow-500",
       pallet: "text-yellow-400",
       bg: "bg-yellow-50 dark:bg-yellow-900",
+      progressBg: "bg-yellow-500",
     },
   };
 
@@ -116,6 +130,7 @@ export const Measure = ({
     setText(measure.text);
     setColor(measure.color);
     setComment(measure.comment);
+    setProgress(measure.progress);
   }, [measure]);
 
   return hidden ? (
@@ -132,7 +147,7 @@ export const Measure = ({
           relative
           rounded
           border px-1 py-2
-          text-center 
+          text-center
         ${colors[color].border}
         ${colors[color].bg}
       `}
@@ -237,8 +252,8 @@ export const Measure = ({
           <IoChatboxEllipsesOutline
             className={`
               absolute -bottom-2 -right-1
-              rounded-md bg-white 
-              dark:bg-gray-900 
+              rounded-md bg-white
+              dark:bg-gray-900
               ${colors[color].icon} hover:cursor-pointer
             `}
             size={25}
@@ -249,6 +264,42 @@ export const Measure = ({
             role="measure"
             aria-label="comment-icon"
           />
+        )}
+        {/* 進捗インジケーター（showProgress有効時のみ表示） */}
+        {showProgress && preview && progress !== undefined && (
+          <div className="mt-1 px-1 pb-1" role="measure" aria-label="progress">
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-gray-400 dark:text-gray-500">進捗</span>
+              <div className="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+                <div
+                  className={`h-1.5 rounded-full ${colors[color].progressBg}`}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="min-w-[2rem] text-right text-xs text-gray-500 dark:text-gray-300">
+                {progress}%
+              </span>
+            </div>
+          </div>
+        )}
+        {showProgress && !preview && (
+          <div className="relative z-20 mt-1 px-1 pb-1" role="measure" aria-label="progress-edit">
+            <div className="flex items-center justify-end gap-1">
+              <span className="text-xs text-gray-400 dark:text-gray-500">進捗</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={progress ?? ''}
+                placeholder="-"
+                onChange={handleProgressChange}
+                className="w-10 bg-transparent text-right text-xs text-gray-500 outline-none dark:text-gray-300 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                role="measure"
+                aria-label="progress-input"
+              />
+              <span className="text-xs text-gray-500 dark:text-gray-300">%</span>
+            </div>
+          </div>
         )}
       </div>
       {(feedback || preview) && showComment && (

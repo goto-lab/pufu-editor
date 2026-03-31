@@ -9,12 +9,14 @@ import {
   editTest,
   feedbackTest,
   previewTest,
+  twoColumnTest,
+  showProgressTest,
 } from "../tests/ProjectScore.stories.test";
 import {
   createInitialScoreDataWithComment,
   createInitialScoreDataWithDuplication,
 } from "../tests/common";
-import { DownloadButton, ImportButton, ModalDialog } from "./common";
+import { DownloadButton, ImportButton, ModalDialog, exampleData } from "./common";
 
 const meta = {
   title: "pufu-editor/ProjectScore",
@@ -143,4 +145,21 @@ export const TextLarge: Story = {
     feedback: true,
     textSize: "large",
   },
+};
+
+export const TwoColumn: Story = {
+  args: {
+    initScore: exampleData,
+    preview: true,
+  },
+  play: twoColumnTest,
+};
+
+export const ShowProgress: Story = {
+  args: {
+    initScore: exampleData,
+    preview: true,
+    showProgress: true,
+  },
+  play: showProgressTest,
 };

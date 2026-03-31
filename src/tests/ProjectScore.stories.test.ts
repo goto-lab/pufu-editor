@@ -1,4 +1,4 @@
-import { within, userEvent, expect } from "@storybook/test";
+import { within, userEvent, expect, waitFor } from "@storybook/test";
 import {
   addMeasure,
   addMeasureByIcon,
@@ -542,4 +542,47 @@ export const previewTest = async ({ canvasElement }: StorybookTestProps) => {
     expect(commentTexbox).toHaveAttribute("readonly");
     expect(await canvas.findByDisplayValue(`施策${i + 1}のコメント`));
   }
+};
+
+// 2列表示テスト（プレビューモード）
+export const twoColumnTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+
+  // スコアが表示される
+  expect(await canvas.findByRole("score", { name: "box" })).toBeInTheDocument();
+
+  // 施策が表示される
+  const measures = await canvas.findAllByRole("measure", { name: "box" });
+  expect(measures.length).toBeGreaterThanOrEqual(2);
+
+  // 施策テキストが読み取り専用
+  const textboxes = await canvas.findAllByRole("measure", { name: "textbox" });
+  for (const textbox of textboxes) {
+    expect(textbox).toHaveAttribute("readonly");
+  }
+
+  // 中間目的が表示される
+  const purposes = await canvas.findAllByRole("purpose", { name: "box" });
+  expect(purposes.length).toBeGreaterThanOrEqual(1);
+};
+
+// 進捗インジケーター表示テスト（プレビューモード）
+export const showProgressTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+
+  // スコアが表示される
+  expect(await canvas.findByRole("score", { name: "box" })).toBeInTheDocument();
+
+  // 進捗バーが表示される（progress値が設定されている施策）
+  await waitFor(async () => {
+    const progressAreas = await canvas.findAllByRole("measure", { name: "progress" });
+    expect(progressAreas.length).toBeGreaterThanOrEqual(1);
+  });
+
+  // 進捗ラベルが表示される
+  const progressLabels = await canvas.findAllByText("進捗");
+  expect(progressLabels.length).toBeGreaterThanOrEqual(1);
+
+  // パーセント表示がある（サンプルデータの75%）
+  expect(await canvas.findByText("75%")).toBeInTheDocument();
 };

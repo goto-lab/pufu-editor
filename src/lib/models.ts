@@ -18,6 +18,7 @@ export type MeasureColor = "white" | "blue" | "green" | "red" | "yellow";
 export interface MeasureModel extends BaseModel {
   id?: string;
   color: MeasureColor;
+  progress?: number; // 0-100の進捗率（Optional）
 }
 
 export interface SortableMeasureModel extends MeasureModel {

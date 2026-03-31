@@ -180,3 +180,57 @@ export const textLargeTest = async ({ canvasElement }: StorybookTestProps) => {
   await expect(textbox).not.toHaveClass("text-base");
   await expect(textbox).toHaveClass("text-lg");
 };
+
+// 進捗インジケーター: 編集モードテスト
+export const progressEditTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+
+  // 施策ボックスが表示される
+  expect(
+    await canvas.findByRole("measure", { name: "box" })
+  ).toBeInTheDocument();
+
+  // 進捗編集エリアが表示される（showProgress=true）
+  const progressEdit = await canvas.findByRole("measure", { name: "progress-edit" });
+  expect(progressEdit).toBeInTheDocument();
+
+  // 進捗ラベルが表示される
+  expect(await canvas.findByText("進捗")).toBeInTheDocument();
+
+  // 進捗入力欄に値が表示される
+  const progressInput = await canvas.findByRole("measure", { name: "progress-input" });
+  expect(progressInput).toBeInTheDocument();
+  expect(progressInput).toHaveValue(60);
+
+  // 値を変更できる
+  await userEvent.clear(progressInput);
+  await userEvent.type(progressInput, "80");
+  expect(progressInput).toHaveValue(80);
+};
+
+// 進捗インジケーター: プレビューモードテスト
+export const progressPreviewTest = async ({ canvasElement }: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+
+  // 施策ボックスが表示される
+  expect(
+    await canvas.findByRole("measure", { name: "box" })
+  ).toBeInTheDocument();
+
+  // プレビューモードの進捗表示エリアが表示される
+  const progressArea = await canvas.findByRole("measure", { name: "progress" });
+  expect(progressArea).toBeInTheDocument();
+
+  // 進捗ラベルが表示される
+  expect(await canvas.findByText("進捗")).toBeInTheDocument();
+
+  // パーセント表示がある
+  expect(await canvas.findByText("80%")).toBeInTheDocument();
+
+  // 編集用の入力欄は表示されない
+  expect(canvas.queryByRole("measure", { name: "progress-input" })).toBeNull();
+
+  // テキストは読み取り専用
+  const textbox = await canvas.findByRole("measure", { name: "textbox" });
+  expect(textbox).toHaveAttribute("readonly");
+};
