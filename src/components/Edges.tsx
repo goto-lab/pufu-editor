@@ -4,8 +4,9 @@ import { ProjectScoreMap } from "../lib/models";
 export interface EdgesProps {
   scoreKey: string;
   scores: ProjectScoreMap;
-  action: boolean;
+  action: number;
   preview: boolean;
+  connectMeasureUuids?: Set<string>; // 右列の施策UUID一覧（2カラム時の線描画制御用）
 }
 
 interface Position {
@@ -27,6 +28,7 @@ export const Edges = ({
   scores,
   action,
   preview = false,
+  connectMeasureUuids,
 }: EdgesProps) => {
   const [viewBox, setViewBox] = useState("0 0 0 0");
   const [edges, setEdges] = useState<PostionSet[]>([]);
@@ -86,6 +88,12 @@ export const Edges = ({
     if (score.purposes.length > 0) {
       score.purposes.forEach((purpose) => {
         purpose.measures.forEach((measure) => {
+          // connectMeasureUuidsが指定されている場合、右列の施策のみ線を描画
+          if (connectMeasureUuids && !connectMeasureUuids.has(measure.uuid)) {
+            purposeMapping.push({ measure: measure.uuid, purpose: purpose.uuid });
+            measureTexts.push(measure.text);
+            return;
+          }
           if (measure.text && measureTexts.includes(measure.text)) {
             edges.push([
               `${scoreKey}-measure-${measure.uuid}`,

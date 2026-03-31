@@ -4,6 +4,8 @@
 import * as t from "ts-interface-checker";
 // tslint:disable:object-literal-key-quotes
 
+export const TextSize = t.union(t.lit("small"), t.lit("base"), t.lit("large"));
+
 export const CommentColor = t.union(t.lit("blue"), t.lit("green"), t.lit("red"));
 
 export const CommentModel = t.iface([], {
@@ -22,6 +24,7 @@ export const MeasureColor = t.union(t.lit("white"), t.lit("blue"), t.lit("green"
 export const MeasureModel = t.iface(["BaseModel"], {
   "id": t.opt("string"),
   "color": "MeasureColor",
+  "progress": t.opt("number"),
 });
 
 export const SortableMeasureModel = t.iface(["MeasureModel"], {
@@ -65,6 +68,7 @@ export const ProjectScoreMap = t.iface([], {
 export const SupportLanguage = t.union(t.lit("ja"), t.lit("en"));
 
 const exportedTypeSuite: t.ITypeSuite = {
+  TextSize,
   CommentColor,
   CommentModel,
   BaseModel,

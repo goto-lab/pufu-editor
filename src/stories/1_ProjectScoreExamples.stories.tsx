@@ -35,6 +35,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 const key1 = "example1";
 const key2 = "example2";
+const key3 = "example3";
 
 const isMobile = () => {
   if (
@@ -47,7 +48,7 @@ const isMobile = () => {
   }
 };
 
-export const Example1: Story = {
+export const Example1_Preview: Story = {
   args: {
     uniqueKey: key1,
     initScore: exampleData,
@@ -100,7 +101,7 @@ export const Example1: Story = {
   },
 };
 
-export const Example2: Story = {
+export const Example2_Edit: Story = {
   args: {
     uniqueKey: key2,
     feedback: true,
@@ -185,6 +186,24 @@ export const Example2: Story = {
             }
           }}
         />
+      </>
+    );
+  },
+};
+
+export const Example3_ShowProgress: Story = {
+  args: {
+    uniqueKey: key3,
+    initScore: exampleData,
+    preview: true,
+    showProgress: true,
+    mobile: isMobile(),
+  },
+  render: function Comp({ ...args }) {
+    return (
+      <>
+        <p className="ml-8 mb-2">進捗インジケーター表示の例</p>
+        <meta.component {...args}></meta.component>
       </>
     );
   },

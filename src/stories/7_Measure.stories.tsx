@@ -8,6 +8,8 @@ import {
   previewTest,
   textBaseTest,
   textLargeTest,
+  progressEditTest,
+  progressPreviewTest,
 } from "../tests/Measure.stories.test";
 import i18n from "../i18n/config";
 i18n.changeLanguage("ja");
@@ -184,6 +186,82 @@ export const Preview: Story = {
     );
   },
   play: previewTest,
+};
+
+export const WithProgress: Story = {
+  args: {
+    measure: {
+      uuid: "1234",
+      color: "green",
+      text: "",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      progress: 60,
+    },
+    i18n: i18n,
+  },
+  render: function Comp({ ...args }) {
+    const [measure, setMeasure] = useState<MeasureModel>({
+      uuid: "1234",
+      color: "green",
+      text: "OSSとしてコードを公開する",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      progress: 60,
+    });
+    return (
+      <meta.component
+        {...args}
+        measure={measure}
+        onChange={setMeasure}
+        showProgress={true}
+        i18n={i18n}
+      ></meta.component>
+    );
+  },
+  play: progressEditTest,
+};
+
+export const WithProgressPreview: Story = {
+  args: {
+    measure: {
+      uuid: "1234",
+      color: "red",
+      text: "",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      progress: 80,
+    },
+  },
+  render: function Comp({ ...args }) {
+    const [measure, setMeasure] = useState<MeasureModel>({
+      uuid: "1234",
+      color: "red",
+      text: "キックプ譜を開発する中で感じた機能的課題を解消する",
+      comment: {
+        color: "blue",
+        text: "",
+      },
+      progress: 80,
+    });
+    return (
+      <meta.component
+        {...args}
+        measure={measure}
+        onChange={setMeasure}
+        preview={true}
+        showProgress={true}
+        i18n={i18n}
+      ></meta.component>
+    );
+  },
+  play: progressPreviewTest,
 };
 
 export const TextBase: Story = {

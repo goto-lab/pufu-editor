@@ -233,6 +233,7 @@ export const exampleData: ProjectScoreModel = {
             text: "",
           },
           color: "red",
+          progress: 75,
         },
         {
           uuid: "aUTXd41VA9FqT36QPDWhRW",
@@ -270,6 +271,7 @@ export const exampleData: ProjectScoreModel = {
             text: "",
           },
           color: "white",
+          progress: 40,
         },
         {
           uuid: "vhKMTEwnoN3CZLmVYfDqHB",
@@ -307,6 +309,7 @@ export const exampleData: ProjectScoreModel = {
             text: "",
           },
           color: "white",
+          progress: 100,
         },
       ],
     },
@@ -377,4 +380,26 @@ export const exampleData: ProjectScoreModel = {
       },
     },
   },
+};
+
+// 共有施策（テキスト重複）を含むサンプルデータ（2カラム表示確認用）
+export const exampleDataWithSharedMeasure: ProjectScoreModel = {
+  ...exampleData,
+  purposes: [
+    {
+      ...exampleData.purposes[0],
+      measures: [
+        ...exampleData.purposes[0].measures,
+        {
+          uuid: "shared-measure-1",
+          text: "プ譜の共有を通してプロジェクトに取り組む人たちを繋げ、その人達を活気づける",
+          comment: { color: "blue", text: "" },
+          color: "blue",
+          progress: 30,
+        },
+      ],
+    },
+    exampleData.purposes[1],
+    exampleData.purposes[2],
+  ],
 };
