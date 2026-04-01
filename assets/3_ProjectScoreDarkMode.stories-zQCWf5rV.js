@@ -1,4 +1,4 @@
-import{j as r}from"./jsx-runtime-DFnSfiB4.js";import{P}from"./ProjectScore-BoQi68dw.js";import"./index-DQ2WTIsS.js";import"./Comment-CLqfI_F3.js";import"./EightElements-CPnT4k9-.js";import"./Measure-_5lxXGl4.js";import"./index-BY9vFk_1.js";import"./IntermediatePurpose-B4vPaTpb.js";import"./ObjectiveBox-CoqNu2kv.js";const h={title:"pufu-editor/ProjectScoreDarkMode",component:P,parameters:{layout:"fullscreen"},tags:["autodocs"]},e={args:{dark:!0}},a={args:{feedback:!0,dark:!0}},o={args:{preview:!0,dark:!0}},s={args:{lang:"en",dark:!0},render:function({...E}){return r.jsxs(r.Fragment,{children:[r.jsx("p",{children:"※Docsでは英語表示不可"}),r.jsx(h.component,{...E})]})}},t={args:{feedback:!0,mobile:!0,dark:!0}};var n,c,m;e.parameters={...e.parameters,docs:{...(n=e.parameters)==null?void 0:n.docs,source:{originalSource:`{
+import{j as r}from"./jsx-runtime-DFnSfiB4.js";import{P}from"./ProjectScore-DJFCNIZK.js";import"./index-DQ2WTIsS.js";import"./Comment-CLqfI_F3.js";import"./EightElements-CPnT4k9-.js";import"./Measure-_5lxXGl4.js";import"./index-BY9vFk_1.js";import"./IntermediatePurpose-B4vPaTpb.js";import"./ObjectiveBox-CoqNu2kv.js";const h={title:"pufu-editor/ProjectScoreDarkMode",component:P,parameters:{layout:"fullscreen"},tags:["autodocs"]},e={args:{dark:!0}},a={args:{feedback:!0,dark:!0}},o={args:{preview:!0,dark:!0}},s={args:{lang:"en",dark:!0},render:function({...E}){return r.jsxs(r.Fragment,{children:[r.jsx("p",{children:"※Docsでは英語表示不可"}),r.jsx(h.component,{...E})]})}},t={args:{feedback:!0,mobile:!0,dark:!0}};var n,c,m;e.parameters={...e.parameters,docs:{...(n=e.parameters)==null?void 0:n.docs,source:{originalSource:`{
   args: {
     dark: true
   }
@@ -32,4 +32,4 @@ import{j as r}from"./jsx-runtime-DFnSfiB4.js";import{P}from"./ProjectScore-BoQi6
     dark: true
   }
 }`,...(S=(x=t.parameters)==null?void 0:x.docs)==null?void 0:S.source}}};const q=["Edit","Feedback","Preview","English","Mobile"];export{e as Edit,s as English,a as Feedback,t as Mobile,o as Preview,q as __namedExportsOrder,h as default};
-//# sourceMappingURL=3_ProjectScoreDarkMode.stories-DyI-Hz_2.js.map
+//# sourceMappingURL=3_ProjectScoreDarkMode.stories-zQCWf5rV.js.map
