@@ -149,7 +149,7 @@ export const ProjectScore = ({
       });
     });
     return uuids;
-  }, [scoreKey, isTwoColumn, action]);
+  }, [scoreKey, isTwoColumn, action, state.scores]);
 
   const scoreStyle = useMemo(() => {
     return width
