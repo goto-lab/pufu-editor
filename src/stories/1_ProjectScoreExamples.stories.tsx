@@ -48,7 +48,7 @@ const isMobile = () => {
   }
 };
 
-export const Example1_Preview: Story = {
+export const Example1: Story = {
   args: {
     uniqueKey: key1,
     initScore: exampleData,
