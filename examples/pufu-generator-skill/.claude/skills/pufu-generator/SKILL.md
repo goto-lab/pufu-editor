@@ -1,7 +1,5 @@
 ---
-
-## name: pufu-generator
-
+name: pufu-generator
 description: |
   プ譜（プロジェクト譜）のJSONデータを既存のドキュメントから自動生成するスキル。
   使用するタイミング：
@@ -11,11 +9,22 @@ description: |
   (4) プ譜エディタ（pufu-editor）で使えるJSON形式でエクスポートしたい
   (5) 時系列で複数ステップがあるプロジェクトの複数局面プ譜を生成したい
   (6) 偶数局面を振り返り局面として、計画と振り返りのペアでプ譜を生成したい
+---
 
 # プ譜ジェネレーター (Pufu Generator)
 
 既存のドキュメント（pptx, xlsx, pdf, docx, txt, md）からプ譜エディタ互換のJSONデータを自動生成する。
 単一局面のプ譜だけでなく、時系列で複数局面のプ譜を生成可能。偶数局面は振り返り局面として自動構成される。
+
+> **⚠ 画像生成の環境制約（必読）**
+>
+> **Cowork環境ではPlaywrightスクリプト（`capture_pufu_image.py`）は動作しない。**
+> サンドボックスのネットワーク制限により、Playwrightのヘッドレスブラウザから外部URL（goto-lab.github.io）にアクセスできない。
+>
+> - **Cowork環境** → **Claude in Chrome MCPツール**を使って画像生成する（方式A）
+> - **Claude Code / ローカル環境** → Playwrightスクリプトを使用可能（方式B）
+>
+> 詳細は「Step 4: 画像生成」を参照。
 
 ## ワークフロー
 
@@ -32,7 +41,7 @@ description: |
    - 単一局面: `ProjectScoreModel` 形式
    - 複数局面: `ProjectScoreMap` 形式（局面ごとの個別JSONも出力）
 3. **サマリ表示**: 生成結果の概要をユーザーに表示
-4. **画像生成**（オプション）: Playwrightスクリプトでプ譜をPNG画像に変換
+4. **画像生成**（オプション）: **Cowork環境ではClaude in Chrome**、それ以外ではPlaywrightスクリプトでPNG画像に変換
 
 > **注意**: ファイルの読み取り・要素抽出・統合はClaude自身が直接行う。
 > Pythonスクリプトは最終成果物の生成（JSON整形・画像キャプチャ）にのみ使用する。
@@ -185,6 +194,14 @@ description: |
 | `green` | 達成・成功した項目 |
 | `red` | 未達・課題が残った項目 |
 | `blue` | 情報・メモ（デフォルト） |
+
+> **重要: `comment.color` と施策の `color` の違い**
+>
+> - **施策の `color`**（measures[].color）: `white`, `red`, `green`, `blue`, `yellow` の5色が使用可能
+> - **コメントの `color`**（comment.color）: **`blue`, `green`, `red` の3色のみ**。`yellow` や `white` は使用不可
+>
+> プ譜エディタのバリデーションにより、`comment.color` に `yellow` を指定するとインポートエラーになる。
+> JSON生成時、コメント色に `yellow` 相当の意味を持たせたい場合は `blue`（情報・メモ）を使用すること。
 
 ### 局面の検出
 
@@ -359,7 +376,60 @@ pufu-editorの `ProjectScoreMap` 形式で出力する（キー→ProjectScoreMo
 
 ## Step 4: 画像生成（オプション）
 
-Playwrightを使用してプ譜JSONからPNG画像を生成する。
+プ譜JSONからPNG画像を生成する。**環境に応じて2つの方式**がある。
+
+### 方式の選択
+
+| 環境 | 推奨方式 | 理由 |
+|------|----------|------|
+| **Cowork（デスクトップアプリ）** | **方式A: Claude in Chrome** | サンドボックスのネットワーク制限によりPlaywrightから外部URLにアクセスできない |
+| **Claude Code（ターミナル）** | **方式B: Playwright** | ヘッドレスブラウザが外部URLに直接アクセスできる |
+| **ローカル実行** | **方式B: Playwright** | 同上 |
+
+**環境の判定方法：**
+- `mcp__Claude_in_Chrome__` で始まるMCPツールが利用可能 → **Cowork環境** → 方式Aを使用
+- 上記ツールが利用不可 → **Claude Code / ローカル** → 方式Bを使用
+
+> **Cowork環境では絶対にPlaywrightスクリプト（`capture_pufu_image.py`）を実行しないこと。**
+> `net::ERR_EMPTY_RESPONSE` エラーで必ず失敗する。
+
+### 方式A: Claude in Chrome（Cowork環境向け）
+
+ユーザーの実際のブラウザをMCPツールで操作してプ譜画像を生成する。
+
+**前提条件：**
+- Claude in Chrome MCPツール（`mcp__Claude_in_Chrome__*`）が利用可能であること
+
+**処理フロー：**
+
+1. **タブ準備**: `tabs_context_mcp` でタブ情報を取得（なければ `tabs_create_mcp` で新規作成）
+2. **ページ遷移**: `navigate` でStorybookのiframeページを開く
+   ```
+   URL: https://goto-lab.github.io/pufu-editor/iframe.html?id=pufu-editor-examples--example-1&viewMode=story
+   ```
+3. **Importモーダルを開く**: `computer`（left_click）で「Import」ボタンをクリック
+4. **JSONデータを入力**: `javascript_tool` でテキストエリアにJSONを設定
+   ```javascript
+   const textarea = document.querySelector('#modal-textarea') || document.querySelector('textarea');
+   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+     window.HTMLTextAreaElement.prototype, 'value'
+   ).set;
+   nativeInputValueSetter.call(textarea, JSON.stringify(pufuData, null, 2));
+   textarea.dispatchEvent(new Event('input', { bubbles: true }));
+   textarea.dispatchEvent(new Event('change', { bubbles: true }));
+   ```
+5. **インポート実行**: `computer`（left_click）でモーダル内の「Import」ボタンをクリック
+6. **描画待機**: `computer`（wait, 2秒）でレンダリング完了を待つ
+7. **画像ダウンロード**: `computer`（left_click）で「Download (png)」ボタンをクリック
+   - PNG画像はブラウザのダウンロードフォルダに保存される
+
+**注意事項：**
+- インポート時にバリデーションエラーが出た場合、`comment.color` に `yellow` が含まれていないか確認する（`blue` に変換が必要）
+- 複数局面の場合は、局面ごとにインポート→ダウンロードを繰り返す
+
+### 方式B: Playwrightスクリプト（Claude Code / ローカル環境向け）
+
+Playwrightのヘッドレスブラウザを使用してプ譜画像を自動キャプチャする。
 
 **処理フロー：**
 
@@ -369,11 +439,6 @@ Playwrightを使用してプ譜JSONからPNG画像を生成する。
 4. PNG画像として保存
 
 **使用方法：**
-
-**出力先：**
-
-- 単一局面: `{work_dir}/03_image/pufu.png`
-- 複数局面: `{work_dir}/03_image/pufu_phase{N}.png`（局面ごと）
 
 ```bash
 # 単一局面
@@ -395,15 +460,20 @@ pip install playwright --break-system-packages
 playwright install chromium
 ```
 
+**出力先（共通）：**
+
+- 単一局面: `{work_dir}/03_image/pufu.png`
+- 複数局面: `{work_dir}/03_image/pufu_phase{N}.png`（局面ごと）
+
 ## 補助スクリプト
 
 以下のスクリプトは必要に応じて使用する。Claudeが直接処理できる場合は省略可能。
 
-| スクリプト | 用途 | 使うタイミング |
-|-----------|------|--------------|
-| `scripts/convert_to_markdown.py` | ファイルをマークダウンに変換 | Claudeが直接読めない形式（pptx, xlsxなど）の場合 |
-| `scripts/generate_pufu_json.py` | サマリJSONからプ譜JSONを生成 | UUID生成やJSON整形を自動化したい場合 |
-| `scripts/capture_pufu_image.py` | プ譜をPNG画像にキャプチャ | 画像が必要な場合（Playwright必須） |
+| スクリプト | 用途 | 使うタイミング | 環境制約 |
+|-----------|------|--------------|----------|
+| `scripts/convert_to_markdown.py` | ファイルをマークダウンに変換 | Claudeが直接読めない形式（pptx, xlsxなど）の場合 | なし |
+| `scripts/generate_pufu_json.py` | サマリJSONからプ譜JSONを生成 | UUID生成やJSON整形を自動化したい場合 | なし |
+| `scripts/capture_pufu_image.py` | プ譜をPNG画像にキャプチャ | 画像が必要な場合（方式B: Playwright） | **Cowork不可**（外部URL制限） |
 
 ### generate_pufu_json.py の使い方
 
@@ -452,5 +522,7 @@ python scripts/generate_pufu_json.py --sample-multi-phase output.json
 - 自動抽出はあくまで候補の提示。最終的な内容は人間がレビュー・調整すること
 - プ譜エディタ（[https://goto-lab.github.io/pufu-editor/）でJSONをインポートして確認可能](https://goto-lab.github.io/pufu-editor/）でJSONをインポートして確認可能)
 - 施策の色は自動推定だが、重要度に応じて手動で調整すること
+- **`comment.color` は `blue`, `green`, `red` の3色のみ使用可能**。施策の `color` とは許容値が異なるため注意
 - 複数局面モードでは、振り返り局面のコメントは特に重要。達成項目は`green`、未達項目は`red`で色分けする
 - 振り返り局面のソースドキュメントがない場合は、計画局面の構造をコピーしてコメント欄を空にし、ユーザーが手動で記入できるようにする
+- **Cowork環境での画像生成**: サンドボックスのネットワーク制限によりPlaywrightスクリプトは使用不可。Claude in Chrome（方式A）を使用すること
