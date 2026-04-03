@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import axios from "axios";
+
 
 // 環境変数の読み込み - .envファイルを読み込み
 dotenv.config({ path: "./.env" });
@@ -617,15 +617,17 @@ app.post("/api/synthesize", async (req, res) => {
     } = req.body;
 
     // 音声クエリの作成
-    const queryResponse = await axios.post(
-      `${VOICEVOX_URL}/audio_query`,
-      null,
-      {
-        params: { text, speaker },
-      }
+    const queryParams = new URLSearchParams({ text, speaker: String(speaker) });
+    const queryResponse = await fetch(
+      `${VOICEVOX_URL}/audio_query?${queryParams}`,
+      { method: "POST" }
     );
 
-    const audioQuery = queryResponse.data;
+    if (!queryResponse.ok) {
+      throw new Error(`VOICEVOX audio_query error: ${queryResponse.status}`);
+    }
+
+    const audioQuery = await queryResponse.json();
 
     // パラメータの調整
     audioQuery.speedScale = speedScale;
@@ -636,17 +638,23 @@ app.post("/api/synthesize", async (req, res) => {
     audioQuery.postPhonemeLength = postPhonemeLength;
 
     // 音声合成
-    const synthesisResponse = await axios.post(
-      `${VOICEVOX_URL}/synthesis`,
-      audioQuery,
+    const synthesisParams = new URLSearchParams({ speaker: String(speaker) });
+    const synthesisResponse = await fetch(
+      `${VOICEVOX_URL}/synthesis?${synthesisParams}`,
       {
-        params: { speaker },
-        responseType: "arraybuffer",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(audioQuery),
       }
     );
 
+    if (!synthesisResponse.ok) {
+      throw new Error(`VOICEVOX synthesis error: ${synthesisResponse.status}`);
+    }
+
     // 音声データをBase64で返す
-    const audioBase64 = Buffer.from(synthesisResponse.data).toString("base64");
+    const audioArrayBuffer = await synthesisResponse.arrayBuffer();
+    const audioBase64 = Buffer.from(audioArrayBuffer).toString("base64");
     res.json({ audio: audioBase64 });
   } catch (error) {
     console.error("音声合成エラー:", error.message);
@@ -657,8 +665,12 @@ app.post("/api/synthesize", async (req, res) => {
 // スピーカー一覧取得
 app.get("/api/speakers", async (req, res) => {
   try {
-    const response = await axios.get(`${VOICEVOX_URL}/speakers`);
-    res.json(response.data);
+    const response = await fetch(`${VOICEVOX_URL}/speakers`);
+    if (!response.ok) {
+      throw new Error(`VOICEVOX speakers error: ${response.status}`);
+    }
+    const data = await response.json();
+    res.json(data);
   } catch (error) {
     console.error("スピーカー取得エラー:", error.message);
     res.status(500).json({ error: "スピーカー情報の取得に失敗しました" });
@@ -668,7 +680,8 @@ app.get("/api/speakers", async (req, res) => {
 // ヘルスチェック
 app.get("/api/health", async (req, res) => {
   try {
-    await axios.get(`${VOICEVOX_URL}/version`);
+    const versionRes = await fetch(`${VOICEVOX_URL}/version`);
+    if (!versionRes.ok) throw new Error("VOICEVOX not available");
     res.json({ status: "ok", voicevox: "connected" });
   } catch (error) {
     res.status(503).json({ status: "error", voicevox: "disconnected" });

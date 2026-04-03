@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export class VoicevoxService {
   private static instance: VoicevoxService;
   private audioContext: AudioContext | null = null;
@@ -46,18 +44,27 @@ export class VoicevoxService {
       console.log('[DEBUG] VoicevoxService.speak開始:', new Date().toISOString(), 'テキスト:', text.substring(0, 50) + '...');
       const startTime = performance.now();
       
-      const response = await axios.post('/api/synthesize', {
-        text,
-        speaker: options.speaker || 3, // ずんだもん
-        speedScale: options.speedScale || 1.2,
-        pitchScale: options.pitchScale || 0,
-        volumeScale: options.volumeScale || 1,
+      const response = await fetch('/api/synthesize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          speaker: options.speaker || 3, // ずんだもん
+          speedScale: options.speedScale || 1.2,
+          pitchScale: options.pitchScale || 0,
+          volumeScale: options.volumeScale || 1,
+        }),
       });
-      
+
+      if (!response.ok) {
+        throw new Error(`音声合成APIエラー: ${response.status}`);
+      }
+
       const apiTime = performance.now();
       console.log('[DEBUG] API応答完了:', (apiTime - startTime).toFixed(2) + 'ms');
 
-      const audioData = response.data.audio;
+      const responseData = await response.json();
+      const audioData = responseData.audio;
       const audioBuffer = this.base64ToArrayBuffer(audioData);
       
       const context = this.getAudioContext();
@@ -115,8 +122,10 @@ export class VoicevoxService {
 
   async checkConnection(): Promise<boolean> {
     try {
-      const response = await axios.get('/api/health');
-      return response.data.voicevox === 'connected';
+      const response = await fetch('/api/health');
+      if (!response.ok) return false;
+      const data = await response.json();
+      return data.voicevox === 'connected';
     } catch {
       return false;
     }
