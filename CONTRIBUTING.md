@@ -14,7 +14,7 @@
 
 1. Forkする
 2. Branchを作る: git checkout -b <feature/xxxx or fix/xxxx>
-3. テストする: npm run storybook 別ターミナルで npm run storybook-test
+3. テストする: pnpm run storybook 別ターミナルで pnpm run storybook-test
 4. 変更をコミットする: git commit -am 'Add: Create some feature'
 5. Pushする: git push origin <feature/xxxx or fix/xxxx>
 5. Pull Requestを送る
@@ -24,7 +24,7 @@
 プ譜エディターの変更内容は[Storybook](https://storybook.js.org/)で確認してください。
 
 ```
-npm run storybook 
+pnpm run storybook
 ```
 
 修正内容に合わせてテストを実装してください。既存のテストコードは`src/tests`に格納されています。
