@@ -10,30 +10,30 @@
 
 ### ビルドと開発
 ```bash
-npm run build              # ライブラリのビルド (clean + tsc + copy + build:css)
-npm run clean              # distディレクトリのクリーン
-npm run lint               # srcディレクトリでESLintを実行
-npm run fix:lint           # ESLintの問題を自動修正
+pnpm run build              # ライブラリのビルド (clean + tsc + copy + build:css)
+pnpm run clean              # distディレクトリのクリーン
+pnpm run lint               # srcディレクトリでESLintを実行
+pnpm run fix:lint           # ESLintの問題を自動修正
 ```
 
 ### Storybook（主要な開発環境）
 ```bash
-npm run storybook          # Storybookの開発サーバーをポート6006で起動
-npm run storybook-build    # 静的Storybookをビルド
-npm run storybook-test     # test-runnerでビジュアルテストを実行
-npm run storybook-test-coverage  # カバレッジレポート付きでテストを実行
-npm run storybook-build-test     # Storybookをビルドしてテスト
+pnpm run storybook          # Storybookの開発サーバーをポート6006で起動
+pnpm run storybook-build    # 静的Storybookをビルド
+pnpm run storybook-test     # test-runnerでビジュアルテストを実行
+pnpm run storybook-test-coverage  # カバレッジレポート付きでテストを実行
+pnpm run storybook-build-test     # Storybookをビルドしてテスト
 ```
 
 ### テスト
 ```bash
-npm run storybook-test     # 主要なテストコマンド（Storybook経由のビジュアルテスト）
-npm run storybook-test-coverage  # カバレッジ付きで実行
+pnpm run storybook-test     # 主要なテストコマンド（Storybook経由のビジュアルテスト）
+pnpm run storybook-test-coverage  # カバレッジ付きで実行
 ```
 
 ### 型インターフェース生成
 ```bash
-npm run model-ti           # models.tsからTypeScriptインターフェースを生成
+pnpm run model-ti           # models.tsからTypeScriptインターフェースを生成
 ```
 
 ## アーキテクチャ

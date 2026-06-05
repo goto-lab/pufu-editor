@@ -21,24 +21,30 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Setup Node.js 20.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          cache: "pnpm"
 
       - name: Install Node Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Build storybook
-        run: npm run storybook-build
+        run: pnpm run storybook-build
 
       - name: Test storybook
-        run: npm run storybook-build-test
+        run: pnpm run storybook-build-test
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
