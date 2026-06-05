@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { i18n } from "i18next";
 import { ElementBox } from "./ElementBox";
 import {
@@ -45,7 +46,7 @@ export const EightElements = ({
     "foreignEnemy",
   ] as ElementLabel[];
 
-  const elementComponents: JSX.Element[] = [];
+  const elementComponents: ReactElement[] = [];
   type ElementsKey = keyof typeof elements;
   for (const key of elementKeys) {
     elementComponents.push(
