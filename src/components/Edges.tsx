@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useRef } from "react";
 import short from "short-uuid";
 import { ProjectScoreMap } from "../lib/models";
+import { getMeasureKey } from "../lib/measures";
 export interface EdgesProps {
   scoreKey: string;
   scores: ProjectScoreMap;
@@ -47,7 +48,7 @@ export const Edges = ({
       observer.disconnect();
       window.removeEventListener("resize", updateEdges);
     };
-  }, [scores, action]);
+  }, [scoreKey, scores, action, preview, connectMeasureUuids]);
 
   const updateEdges = () => {
     const dom = document.getElementById(`score-${scoreKey}`);
@@ -79,7 +80,7 @@ export const Edges = ({
         "line",
       ];
     });
-    const measureTexts: string[] = [];
+    const measureKeys: string[] = [];
     interface purposeMap {
       measure: string;
       purpose: string;
@@ -88,20 +89,21 @@ export const Edges = ({
     if (score.purposes.length > 0) {
       score.purposes.forEach((purpose) => {
         purpose.measures.forEach((measure) => {
+          const key = getMeasureKey(measure, preview);
           // connectMeasureUuidsが指定されている場合、右列の施策のみ線を描画
           if (connectMeasureUuids && !connectMeasureUuids.has(measure.uuid)) {
             purposeMapping.push({ measure: measure.uuid, purpose: purpose.uuid });
-            measureTexts.push(measure.text);
+            measureKeys.push(key);
             return;
           }
-          if (measure.text && measureTexts.includes(measure.text)) {
+          if (measure.text && measureKeys.includes(key)) {
             edges.push([
               `${scoreKey}-measure-${measure.uuid}`,
               `${scoreKey}-purpose-${purpose.uuid}`,
               "",
               "dashed",
             ]);
-            const index = measureTexts.indexOf(measure.text);
+            const index = measureKeys.indexOf(key);
             if (purpose.uuid !== purposeMapping[index].purpose)
               edges.push([
                 `${scoreKey}-measure-${purposeMapping[index].measure}`,
@@ -118,7 +120,7 @@ export const Edges = ({
             ]);
           }
           purposeMapping.push({ measure: measure.uuid, purpose: purpose.uuid });
-          measureTexts.push(measure.text);
+          measureKeys.push(key);
         });
       });
     }

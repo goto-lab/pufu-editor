@@ -5,7 +5,13 @@ import modelsTI from "../lib/models-ti";
 import { i18n } from "i18next";
 import "../i18n/config";
 import { createCheckers } from "ts-interface-checker";
-import { ProjectScoreModel, SupportLanguage, TextSize } from "../lib/models";
+import {
+  MeasureModel,
+  ProjectScoreModel,
+  SupportLanguage,
+  TextSize,
+} from "../lib/models";
+import { getMeasureKey } from "../lib/measures";
 import { createScoreKey, ProjectScoreStore } from "../lib/store";
 import { useProjectScoreStoreEffect, useI18Translation } from "../lib/hooks";
 import { EightElements } from "./EightElements";
@@ -59,28 +65,36 @@ export const ProjectScore = ({
   const hideMeasure = (
     purposeIndex: number,
     measureIndex: number,
-    text: string
+    measure: MeasureModel
   ): boolean => {
-    if (preview && text) {
-      return state.scores[scoreKey].purposes
-        .map((p, pIndex) => {
-          return p.measures
-            .map((m, mIndex) => {
-              if (m.text === text) {
-                if (pIndex === purposeIndex && mIndex == measureIndex)
-                  return false;
-                if (pIndex < purposeIndex) return true;
-                if (pIndex === purposeIndex && mIndex < measureIndex)
-                  return true;
-              }
-              return false;
-            })
-            .reduce((a, b) => a || b, false);
-        })
-        .reduce((a, b) => a || b, false);
-    }
-    return false;
+    if (!preview || !measure.text) return false;
+    const key = getMeasureKey(measure, preview);
+    return state.scores[scoreKey].purposes.some((p, pIndex) =>
+      p.measures.some(
+        (m, mIndex) =>
+          (pIndex < purposeIndex ||
+            (pIndex === purposeIndex && mIndex < measureIndex)) &&
+          getMeasureKey(m, preview) === key
+      )
+    );
   };
+
+  const measurePurposeCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    state.scores[scoreKey]?.purposes.forEach((purpose) => {
+      const keys = new Set(
+        purpose.measures
+          .filter((m) => m.text)
+          .map((m) => getMeasureKey(m, preview))
+      );
+      keys.forEach((key) => counts.set(key, (counts.get(key) || 0) + 1));
+    });
+    return counts;
+  }, [scoreKey, preview, action, state.scores[scoreKey]]);
+
+  const isSharedMeasure = (measure: MeasureModel): boolean =>
+    !!measure.text &&
+    (measurePurposeCounts.get(getMeasureKey(measure, preview)) || 0) > 1;
 
   // 2カラム表示かどうかを判定（施策エリアの幅が十分ある場合のみ）
   const [isTwoColumn, setIsTwoColumn] = useState(false);
@@ -105,12 +119,13 @@ export const ProjectScore = ({
     observerRef.current.observe(node);
   }, [mobile]);
 
-  // カラム数変更時にEdgesの線を再描画（DOM確定後に実行）
+  // カラム数・プレビュー変更時にEdgesの線を再描画（DOM確定後に実行）
   useEffect(() => {
-    requestAnimationFrame(() => {
+    const frame = requestAnimationFrame(() => {
       updateAction();
     });
-  }, [isTwoColumn]);
+    return () => cancelAnimationFrame(frame);
+  }, [isTwoColumn, preview]);
 
   // 右列（中間目的に近い列）の施策UUIDを算出（2カラム時、線の接続対象）
   // actionを依存配列に含めることで施策の追加・削除・並び替え時にも再計算される
@@ -118,23 +133,12 @@ export const ProjectScore = ({
     if (!isTwoColumn || !(scoreKey in state.scores)) return undefined;
     const uuids = new Set<string>();
 
-    // 共有施策テキストを特定（複数purposeに存在するテキスト）
-    const textPurposeCount = new Map<string, number>();
-    state.scores[scoreKey].purposes.forEach((p) => {
-      const seen = new Set<string>();
-      p.measures.forEach((m) => {
-        if (m.text && !seen.has(m.text)) {
-          seen.add(m.text);
-          textPurposeCount.set(m.text, (textPurposeCount.get(m.text) || 0) + 1);
-        }
-      });
-    });
-    const isSharedText = (text: string) => text && (textPurposeCount.get(text) || 0) > 1;
-
-    state.scores[scoreKey].purposes.forEach((p) => {
+    state.scores[scoreKey].purposes.forEach((p, pIndex) => {
       // 共有施策は常に右列（接続対象）
       // 通常施策は2カラムグリッドの右列のみ接続対象
-      const normalMeasures = p.measures.filter((m) => !isSharedText(m.text));
+      const normalMeasures = p.measures.filter(
+        (m, mIndex) => !hideMeasure(pIndex, mIndex, m) && !isSharedMeasure(m)
+      );
       const count = normalMeasures.length;
       normalMeasures.forEach((m, idx) => {
         if (count <= 1 || idx % 2 === 1 || idx === count - 1) {
@@ -143,13 +147,13 @@ export const ProjectScore = ({
       });
       // 共有施策は常に接続対象
       p.measures.forEach((m) => {
-        if (isSharedText(m.text)) {
+        if (isSharedMeasure(m)) {
           uuids.add(m.uuid);
         }
       });
     });
     return uuids;
-  }, [scoreKey, isTwoColumn, action, state.scores]);
+  }, [scoreKey, isTwoColumn, preview, action, state.scores, measurePurposeCounts]);
 
   const scoreStyle = useMemo(() => {
     return width
@@ -223,24 +227,6 @@ export const ProjectScore = ({
                 </div>
               )}
               {state.scores[scoreKey].purposes.map((purpose, purposeIndex) => {
-                // 共有施策の判定（他のpurposeにも同じテキストが存在するか）
-                const otherTexts = new Set<string>();
-                state.scores[scoreKey].purposes.forEach((p, pIdx) => {
-                  if (pIdx !== purposeIndex) {
-                    p.measures.forEach((m) => {
-                      if (m.text) otherTexts.add(m.text);
-                    });
-                  }
-                });
-                const isSharedMeasure = (text: string) => text && otherTexts.has(text);
-                // 共有施策は最初のpurposeでのみ表示
-                const isFirstPurposeForText = (text: string) => {
-                  for (const p of state.scores[scoreKey].purposes) {
-                    if (p.measures.some((m) => m.text === text)) return p.uuid === purpose.uuid;
-                  }
-                  return false;
-                };
-
                 return (
                   <div
                     className={`
@@ -260,14 +246,16 @@ export const ProjectScore = ({
                         /* プレビュー+2カラム時: 通常施策は2カラム、共有施策は右寄せ */
                         <div className="grid grid-cols-2 gap-x-2">
                           {(() => {
-                            const normalMeasures = purpose.measures
-                              .filter((m) => !isSharedMeasure(m.text));
+                            const visibleMeasures = purpose.measures.filter((m, mIndex) =>
+                              !hideMeasure(purposeIndex, mIndex, m)
+                            );
+                            const normalMeasures = visibleMeasures
+                              .filter((m) => !isSharedMeasure(m));
                             const items: React.ReactNode[] = [];
                             let colPos = 0; // 現在のグリッド列位置（0=左, 1=右）
                             let normalIdx = 0;
-                            purpose.measures.forEach((m) => {
-                              const shared = isSharedMeasure(m.text);
-                              if (shared && !isFirstPurposeForText(m.text)) return;
+                            visibleMeasures.forEach((m) => {
+                              const shared = isSharedMeasure(m);
                               if (shared) {
                                 // 共有施策は右列に配置。左列にいる場合のみスペーサー挿入
                                 if (colPos % 2 === 0) {
@@ -325,16 +313,17 @@ export const ProjectScore = ({
                             }
                           }}
                           animation={150}
+                          disabled={preview}
                           delay={2}
                           filter={"textarea,input"}
                           preventOnFilter={false}
                         >
                           {(() => {
                             const normalMeasures = purpose.measures
-                              .filter((m) => !isSharedMeasure(m.text));
+                              .filter((m) => !isSharedMeasure(m));
                             let normalIdx = 0;
                             return purpose.measures.map((measure, measureIndex) => {
-                              const shared = isTwoColumn && isSharedMeasure(measure.text);
+                              const shared = isTwoColumn && isSharedMeasure(measure);
                               let rightAlign = shared;
                               if (!shared && isTwoColumn) {
                                 const isLastNormal = normalIdx === normalMeasures.length - 1;
@@ -362,7 +351,7 @@ export const ProjectScore = ({
                                 hidden={hideMeasure(
                                   purposeIndex,
                                   measureIndex,
-                                  measure.text
+                                  measure
                                 )}
                                 onChange={(measure) => {
                                   state.setMeasure(
@@ -503,6 +492,7 @@ export const ProjectScore = ({
               elements={state.scores[scoreKey].elements}
               feedback={feedback}
               mobile={mobile}
+              preview={preview}
               dark={dark}
               i18n={i18n}
               textSize={textSize}
