@@ -36,14 +36,14 @@ export const ProjectScoreView: React.FC<ProjectScoreViewProps> = ({ projectInfo,
             text: ''
           }
         },
-        purposes: projectInfo.intermediatePurposes.map((purpose, index) => ({
+        purposes: projectInfo.intermediatePurposes.map((purpose) => ({
           uuid: short.generate(),
           text: purpose.purpose,
           comment: {
             color: 'blue',
             text: ''
           },
-          measures: purpose.measures.map((measure, mIndex) => ({
+          measures: purpose.measures.map((measure) => ({
             uuid: short.generate(),
             text: measure.action,
             comment: {
