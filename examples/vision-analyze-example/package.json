@@ -33,6 +33,7 @@
     "vite": "^6.4.4"
   },
   "overrides": {
-    "picomatch@<2.3.2": "^2.3.2"
+    "picomatch@<2.3.2": "^2.3.2",
+    "postcss-selector-parser": "^7.1.6"
   }
 }
