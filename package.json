@@ -82,7 +82,7 @@
     "leader-line-new": "^1.1.9",
     "loglevel": "^1.9.2",
     "playwright": "^1.49.1",
-    "postcss": "^8.4.35",
+    "postcss": "^8.5.31",
     "postcss-cli": "^11.0.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
@@ -100,7 +100,7 @@
     "ts-interface-builder": "^0.3.3",
     "ts-interface-checker": "^1.0.2",
     "typescript": "^5.3.3",
-    "vite": "^5.4.21",
+    "vite": "^6.4.4",
     "wait-on": "^7.2.0",
     "zustand": "^4.5.7"
   },

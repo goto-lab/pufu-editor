@@ -4,7 +4,6 @@ export class SpeechRecognitionService {
   private static instance: SpeechRecognitionService;
   private recognition: any;
   private isRecognizing: boolean = false;
-  private audioDeviceManager: AudioDeviceManager;
   private silenceTimeoutId: NodeJS.Timeout | null = null;
 
   private constructor() {
@@ -18,7 +17,7 @@ export class SpeechRecognitionService {
       this.recognition.interimResults = true;
       this.recognition.maxAlternatives = 1;
     }
-    this.audioDeviceManager = AudioDeviceManager.getInstance();
+    AudioDeviceManager.getInstance();
   }
 
   static getInstance(): SpeechRecognitionService {
