@@ -1,6 +1,11 @@
 import React from "react";
 import { StoryObj, Meta } from "@storybook/react";
 import { ProjectScore } from "../components/ProjectScore";
+import { exampleData } from "./common";
+import {
+  narrowMinimapTest,
+  mobilePreviewTest,
+} from "../tests/ProjectScore.stories.test";
 
 const meta = {
   title: "pufu-editor/ProjectScoreDarkMode",
@@ -51,4 +56,39 @@ export const Mobile: Story = {
     mobile: true,
     dark: true,
   },
+};
+
+export const MobilePreview: Story = {
+  args: {
+    initScore: exampleData,
+    preview: true,
+    mobile: true,
+    dark: true,
+    textSize: "base",
+  },
+  render: (args) => (
+    <div style={{ maxWidth: 390, margin: "0 auto" }}>
+      <ProjectScore {...args} />
+    </div>
+  ),
+  play: mobilePreviewTest,
+};
+
+export const NarrowPreview: Story = {
+  args: {
+    initScore: exampleData,
+    preview: true,
+    mobile: false,
+    dark: true,
+    textSize: "base",
+  },
+  render: (args) => (
+    <div
+      data-testid="resizable-score"
+      style={{ maxWidth: 640, margin: "0 auto" }}
+    >
+      <ProjectScore {...args} />
+    </div>
+  ),
+  play: narrowMinimapTest,
 };

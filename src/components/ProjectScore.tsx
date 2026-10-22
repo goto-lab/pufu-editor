@@ -1,4 +1,11 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { ReactSortable } from "react-sortablejs";
 import domtoimage from "dom-to-image";
 import modelsTI from "../lib/models-ti";
@@ -19,6 +26,7 @@ import { Measure, AddMeasure, AddMeasureIcon } from "./Measure";
 import { IntermediatePurpose, AddPurpose } from "./IntermediatePurpose";
 import { ObjectiveBox } from "./ObjectiveBox";
 import { Edges } from "./Edges";
+import { ScoreViewport } from "./ScoreViewport";
 import { logger } from "../lib/logger";
 
 export interface ProjectScoreProps {
@@ -27,6 +35,7 @@ export interface ProjectScoreProps {
   feedback?: boolean;
   preview?: boolean;
   dark?: boolean;
+  /** trueは従来の縦長表示。falseは横並びで、幅が足りない場合にミニマップを表示。 */
   mobile?: boolean;
   showProgress?: boolean;
   lang?: SupportLanguage;
@@ -52,6 +61,21 @@ export const ProjectScore = ({
 }: ProjectScoreProps) => {
   const [scoreKey] = useState(uniqueKey ?? createScoreKey());
   const scoreRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const canvasWidth = Math.max(width ?? 900, 900);
+  const [isNarrow, setIsNarrow] = useState(false);
+  const showMinimap = !mobile && isNarrow;
+
+  // 横並び表示では端末の種類ではなく、埋め込み先の幅に応じて切り替える。
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const checkWidth = () => setIsNarrow(container.clientWidth < canvasWidth);
+    checkWidth();
+    const observer = new ResizeObserver(checkWidth);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [canvasWidth]);
 
   const [action, setAction] = useState(0);
   const updateAction = () => {
@@ -156,15 +180,24 @@ export const ProjectScore = ({
   }, [scoreKey, isTwoColumn, preview, action, state.scores, measurePurposeCounts]);
 
   const scoreStyle = useMemo(() => {
+    if (showMinimap) {
+      return { width: `${canvasWidth}px`, minWidth: "100%" };
+    }
     return width
       ? {
           width: `${width}px`,
         }
       : {};
-  }, [width]);
+  }, [width, canvasWidth, showMinimap]);
 
   return (
-    <>
+    <ScoreViewport
+      enabled={showMinimap && (scoreKey in state.scores)}
+      containerRef={containerRef}
+      dark={dark}
+      scoreRef={scoreRef}
+      i18n={i18n}
+    >
       {scoreKey in state.scores ? (
         <div
           id={`score-${scoreKey}`}
@@ -506,7 +539,7 @@ export const ProjectScore = ({
       ) : (
         <ScoreLoading i18n={i18n} />
       )}
-    </>
+    </ScoreViewport>
   );
 };
 

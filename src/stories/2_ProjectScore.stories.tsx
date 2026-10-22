@@ -11,12 +11,19 @@ import {
   previewTest,
   twoColumnTest,
   showProgressTest,
+  narrowMinimapTest,
+  mobilePreviewTest,
 } from "../tests/ProjectScore.stories.test";
 import {
   createInitialScoreDataWithComment,
   createInitialScoreDataWithDuplication,
 } from "../tests/common";
-import { DownloadButton, ImportButton, ModalDialog, exampleData } from "./common";
+import {
+  DownloadButton,
+  ImportButton,
+  ModalDialog,
+  exampleData,
+} from "./common";
 
 const meta = {
   title: "pufu-editor/ProjectScore",
@@ -72,6 +79,68 @@ export const Mobile: Story = {
     mobile: true,
   },
   play: editTest,
+};
+
+export const MobileEdit: Story = {
+  args: {
+    initScore: exampleData,
+    mobile: true,
+    textSize: "base",
+  },
+  render: (args) => (
+    <div style={{ maxWidth: 390, margin: "0 auto" }}>
+      <ProjectScore {...args} />
+    </div>
+  ),
+};
+
+export const MobilePreview: Story = {
+  args: {
+    initScore: exampleData,
+    preview: true,
+    mobile: true,
+    textSize: "base",
+  },
+  render: (args) => (
+    <div style={{ maxWidth: 390, margin: "0 auto" }}>
+      <ProjectScore {...args} />
+    </div>
+  ),
+  play: mobilePreviewTest,
+};
+
+export const NarrowEdit: Story = {
+  args: {
+    initScore: exampleData,
+    mobile: false,
+    textSize: "base",
+  },
+  render: (args) => (
+    <div
+      data-testid="resizable-score"
+      style={{ maxWidth: 640, margin: "0 auto" }}
+    >
+      <ProjectScore {...args} />
+    </div>
+  ),
+};
+
+export const NarrowPreview: Story = {
+  args: {
+    initScore: exampleData,
+    preview: true,
+    mobile: false,
+    textSize: "base",
+  },
+  render: (args) => (
+    <div
+      data-testid="resizable-score"
+      style={{ maxWidth: 640, margin: "0 auto" }}
+    >
+      <ProjectScore {...args} />
+    </div>
+  ),
+  play: narrowMinimapTest,
 };
 
 export const Download: Story = {
