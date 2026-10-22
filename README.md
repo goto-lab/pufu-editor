@@ -49,6 +49,7 @@ export default App;
 - モバイルモード: 従来の縦長表示（`mobile={true}`）
 - 横並び表示: 表示エリアが狭い場合はミニマップ付きのスクロール表示へ自動切り替え（`mobile={false}`、デフォルト）
 - 言語選択: 日本語と英語のラベル表記
+- テキストサイズ: `xsmall` / `small`（デフォルト） / `base` / `large`（例: `<ProjectScore textSize="xsmall" />`）
 
 **設定例**
 

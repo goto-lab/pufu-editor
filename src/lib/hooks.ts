@@ -51,6 +51,8 @@ export const useI18Translation = (lang: SupportLanguage) => {
 export const useTextSize = (textSize: TextSize) => {
   return useMemo(() => {
     switch (textSize) {
+      case "xsmall":
+        return "text-xs";
       case "small":
         return "text-sm";
       case "base":

@@ -201,6 +201,14 @@ export const NoBorder: Story = {
   },
 };
 
+export const TextXSmall: Story = {
+  args: {
+    initScore: createInitialScoreDataWithComment(),
+    feedback: true,
+    textSize: "xsmall",
+  },
+};
+
 export const TextBase: Story = {
   args: {
     initScore: createInitialScoreDataWithComment(),

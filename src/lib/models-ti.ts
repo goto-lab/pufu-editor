@@ -4,7 +4,7 @@
 import * as t from "ts-interface-checker";
 // tslint:disable:object-literal-key-quotes
 
-export const TextSize = t.union(t.lit("small"), t.lit("base"), t.lit("large"));
+export const TextSize = t.union(t.lit("xsmall"), t.lit("small"), t.lit("base"), t.lit("large"));
 
 export const CommentColor = t.union(t.lit("blue"), t.lit("green"), t.lit("red"));
 
