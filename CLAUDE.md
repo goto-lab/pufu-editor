@@ -62,7 +62,7 @@ pnpm run model-ti           # models.tsからTypeScriptインターフェース�
 ### 国際化
 - 日本語・英語サポートのためのi18next
 - 言語ファイルは `src/i18n/locales/` に配置
-- テキストサイズのバリエーション：small/base/large
+- テキストサイズのバリエーション：xsmall/small/base/large
 
 ### スタイリング
 - コンポーネント固有スタイル用のCSS ModulesとTailwindCSS
