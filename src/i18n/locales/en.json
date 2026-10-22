@@ -29,6 +29,11 @@
     "InputRival": "Input rival",
     "InputForeignEnemy": "Input foreign enemy",
     "InputComment": "Input comment",
-    "LoadFailed": "Failed to load pufu data."
+    "LoadFailed": "Failed to load pufu data.",
+    "ScoreViewport": "Project score viewport",
+    "MiniMap": "Overview",
+    "MiniMapNavigate": "Overview: tap, drag, or use arrow keys to navigate",
+    "CloseMiniMap": "Close overview",
+    "OpenMiniMap": "Show overview"
   }
 }

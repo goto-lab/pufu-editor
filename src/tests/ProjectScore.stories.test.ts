@@ -13,6 +13,135 @@ interface StorybookTestProps {
   canvasElement: HTMLElement;
 }
 
+export const narrowMinimapTest = async ({
+  canvasElement,
+}: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const viewport = await canvas.findByRole("region", {
+    name: "プ譜の表示エリア",
+  });
+  const score = await canvas.findByRole("score", { name: "box" });
+  const minimap = await canvas.findByRole("button", { name: /全体マップ：/ });
+
+  // 狭い表示エリアでも八要素を左列に保ち、接続線と全体マップを表示する。
+  expect(score.clientWidth).toBeGreaterThan(viewport.clientWidth);
+  expect(
+    (
+      await canvas.findByRole("elements", { name: "box" })
+    ).getBoundingClientRect().left,
+  ).toBeLessThan(
+    (
+      await canvas.findAllByRole("measure", { name: "box" })
+    )[0].getBoundingClientRect().left,
+  );
+  await waitFor(() => {
+    expect(score.querySelectorAll("svg line").length).toBeGreaterThan(0);
+    expect(minimap.querySelectorAll("rect").length).toBeGreaterThan(8);
+    expect(minimap.querySelectorAll("line").length).toBeGreaterThan(0);
+  });
+  expect(getComputedStyle(viewport).paddingBottom).toBe("0px");
+  expect(
+    minimap.querySelectorAll('[data-node-id="eight-elements"]').length,
+  ).toBe(1);
+  expect(minimap.querySelectorAll('[data-node-id*="-element-"]').length).toBe(
+    0,
+  );
+  const mapSvg = minimap.querySelector("svg")!;
+  await waitFor(() =>
+    expect(mapSvg.viewBox.baseVal.height).toBe(score.offsetHeight),
+  );
+  const mapBounds = mapSvg.getBoundingClientRect();
+  expect(mapBounds.width / mapBounds.height).toBeCloseTo(
+    mapSvg.viewBox.baseVal.width / mapSvg.viewBox.baseVal.height,
+    2,
+  );
+  for (const textbox of score.querySelectorAll("textarea")) {
+    expect(textbox).toHaveAttribute("readonly");
+  }
+
+  // キーボードによる移動と表示範囲の同期。
+  minimap.focus();
+  await userEvent.keyboard("{ArrowRight}");
+  await waitFor(() => {
+    expect(viewport.scrollLeft).toBeGreaterThan(0);
+    expect(
+      Number(minimap.querySelector("rect:last-child")?.getAttribute("x")),
+    ).toBe(viewport.scrollLeft);
+  });
+  await userEvent.keyboard("{ArrowLeft}");
+  await waitFor(() => expect(viewport.scrollLeft).toBe(0));
+
+  // マップの右端をタップすると勝利条件側へ移動する。
+  const bounds = minimap.getBoundingClientRect();
+  await userEvent.pointer({
+    keys: "[MouseLeft]",
+    target: minimap,
+    coords: {
+      clientX: bounds.right - 8,
+      clientY: bounds.top + bounds.height / 2,
+    },
+  });
+  await waitFor(() => expect(viewport.scrollLeft).toBeGreaterThan(0));
+  viewport.scrollTo(0, 0);
+
+  // マップを閉じてもスクロール表示は維持され、同じ場所で再表示できる。
+  await userEvent.click(
+    canvas.getByRole("button", { name: "全体マップを閉じる" }),
+  );
+  expect(
+    canvas.queryByRole("button", { name: /全体マップ：/ }),
+  ).not.toBeInTheDocument();
+  const reopen = canvas.getByRole("button", { name: "全体マップを表示" });
+  await waitFor(() => expect(reopen).toHaveFocus());
+  expect(viewport).toBeInTheDocument();
+  await userEvent.click(reopen);
+  expect(
+    await canvas.findByRole("button", { name: /全体マップ：/ }),
+  ).toBeInTheDocument();
+
+  // 端末幅は変えず、埋め込み先だけを広げても自動的に通常表示へ戻る。
+  const host = canvas.getByTestId("resizable-score");
+  const initialStyle = host.style.cssText;
+  try {
+    host.style.maxWidth = "none";
+    host.style.width = "900px";
+    await waitFor(() =>
+      expect(
+        canvas.queryByRole("button", { name: /全体マップ：/ }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(await canvas.findByRole("score", { name: "box" })).toBe(score);
+    host.style.width = "899px";
+    await waitFor(() =>
+      expect(
+        canvas.queryByRole("button", { name: /全体マップ：/ }),
+      ).toBeInTheDocument(),
+    );
+    expect(score.getBoundingClientRect().width).toBe(900);
+  } finally {
+    host.style.cssText = initialStyle;
+  }
+};
+
+export const mobilePreviewTest = async ({
+  canvasElement,
+}: StorybookTestProps) => {
+  const canvas = within(canvasElement);
+  const score = await canvas.findByRole("score", { name: "box" });
+  expect(
+    canvas.queryByRole("button", { name: /全体マップ：/ }),
+  ).not.toBeInTheDocument();
+  expect(score.querySelectorAll("svg line").length).toBe(0);
+  const elements = await canvas.findByRole("elements", { name: "box" });
+  const purposes = await canvas.findAllByRole("purpose", { name: "box" });
+  expect(elements.getBoundingClientRect().top).toBeGreaterThan(
+    purposes[0].getBoundingClientRect().bottom,
+  );
+  for (const textbox of score.querySelectorAll("textarea")) {
+    expect(textbox).toHaveAttribute("readonly");
+  }
+};
+
 export const editTest = async ({ canvasElement }: StorybookTestProps) => {
   const canvas = within(canvasElement);
 

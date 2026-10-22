@@ -37,23 +37,11 @@ const key1 = "example1";
 const key2 = "example2";
 const key3 = "example3";
 
-const isMobile = () => {
-  if (
-    window.matchMedia &&
-    window.matchMedia("(max-device-width: 640px)").matches
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
 export const Example1: Story = {
   args: {
     uniqueKey: key1,
     initScore: exampleData,
     preview: true,
-    mobile: isMobile(),
   },
   render: function Comp({ ...args }) {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -105,7 +93,6 @@ export const Example2_Edit: Story = {
   args: {
     uniqueKey: key2,
     feedback: true,
-    mobile: isMobile(),
   },
   render: function Comp({ ...args }) {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -197,7 +184,6 @@ export const Example3_ShowProgress: Story = {
     initScore: exampleData,
     preview: true,
     showProgress: true,
-    mobile: isMobile(),
   },
   render: function Comp({ ...args }) {
     return (

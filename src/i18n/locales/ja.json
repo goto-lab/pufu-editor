@@ -29,6 +29,11 @@
     "InputRival": "ライバルを入力",
     "InputForeignEnemy": "外敵を入力",
     "InputComment": "コメントを入力",
-    "LoadFailed": "プ譜の作成に失敗しました。"
+    "LoadFailed": "プ譜の作成に失敗しました。",
+    "ScoreViewport": "プ譜の表示エリア",
+    "MiniMap": "全体マップ",
+    "MiniMapNavigate": "全体マップ：タップ・ドラッグ、または矢印キーで移動",
+    "CloseMiniMap": "全体マップを閉じる",
+    "OpenMiniMap": "全体マップを表示"
   }
 }
