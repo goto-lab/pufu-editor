@@ -81,7 +81,7 @@
     "i18next-browser-languagedetector": "^7.2.2",
     "leader-line-new": "^1.1.9",
     "loglevel": "^1.9.2",
-    "playwright": "^1.49.1",
+    "playwright": "^1.61.1",
     "postcss": "^8.5.31",
     "postcss-cli": "^11.0.0",
     "prettier": "^3.2.5",
