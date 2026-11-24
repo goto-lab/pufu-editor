@@ -26,6 +26,18 @@
     "short-uuid": "^4.2.2"
   },
   "overrides": {
+    "@aws-amplify/sandbox@1": {
+      "glob": "^14.0.2"
+    },
+    "@typescript-eslint/typescript-estree@7": {
+      "minimatch": "^11.0.1"
+    },
+    "style-dictionary@3": {
+      "glob": "^14.0.2"
+    },
+    "sucrase@3": {
+      "glob": "^14.0.2"
+    },
     "fast-xml-parser": "^5.12.0",
     "handlebars": "4.7.10",
     "immutable@<3.8.4": "^3.8.4",
@@ -52,8 +64,8 @@
     "@typescript-eslint/parser": "^7.15.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
-    "aws-cdk": "^2.151.0",
-    "aws-cdk-lib": "^2.151.0",
+    "aws-cdk": "^2.1149.0",
+    "aws-cdk-lib": "^2.278.0",
     "constructs": "^10.3.0",
     "esbuild": "^0.25.12",
     "eslint": "^8.57.0",
