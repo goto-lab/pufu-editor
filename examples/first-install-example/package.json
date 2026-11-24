@@ -29,6 +29,9 @@
     "vite": "^6.4.5"
   },
   "overrides": {
+    "@typescript-eslint/typescript-estree@7": {
+      "minimatch": "^11.0.1"
+    },
     "picomatch@<2.3.2": "^2.3.2"
   }
 }

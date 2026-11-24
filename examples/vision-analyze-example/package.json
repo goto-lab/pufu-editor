@@ -33,6 +33,12 @@
     "vite": "^6.4.5"
   },
   "overrides": {
+    "@typescript-eslint/typescript-estree@7": {
+      "minimatch": "^11.0.1"
+    },
+    "sucrase@3": {
+      "glob": "^14.0.2"
+    },
     "picomatch@<2.3.2": "^2.3.2",
     "postcss-selector-parser": "^7.1.6"
   }
